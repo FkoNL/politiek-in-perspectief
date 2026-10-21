@@ -38,7 +38,7 @@ jobs:
         run: |
           git config user.name "politiek-in-perspectief[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html archief.html edities scripts
+          git add index.html archief.html edities scripts assets/edities
           git diff --cached --quiet && exit 0
           git commit -m "Maak concepteditie $(date -u +%F)"
           git push --force origin "${{ steps.branch.outputs.name }}"
