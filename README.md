@@ -2,11 +2,27 @@
 
 Een rustige, openbare Nederlandstalige site met wekelijkse politieke context.
 
+## Lokaal bekijken
+
+Open `index.html` in een browser, of start vanuit deze map een eenvoudige lokale webserver.
+
 ## Publiceren via GitHub Pages
 
-De workflow in `.github/workflows/deploy-pages.yml` publiceert iedere push naar `main` via GitHub Pages.
+1. Maak een nieuwe GitHub-repository en push deze bestanden naar de branch `main`.
+2. Ga op GitHub naar **Settings → Pages** en kies bij *Build and deployment* voor **GitHub Actions**.
+3. De workflow in `.github/workflows/deploy-pages.yml` publiceert iedere push naar `main`.
 
-De site gebruikt geen API-sleutels, geen buildstap en geen externe inhoudelijke databronnen. De workflow heeft uitsluitend de standaardrechten die nodig zijn voor GitHub Pages.
+De openbare site bevat geen API-sleutels. De workflow heeft uitsluitend de standaardrechten die nodig zijn voor GitHub Pages.
+
+## Wekelijkse concepteditie
+
+De workflow `.github/workflows/wekelijkse-concepteditie.yml` loopt elke maandag om 07:00 UTC. Hij gebruikt de OpenAI Responses API met webzoeking om een concepteditie te maken, inclusief klikbare bronvermeldingen. De workflow opent daarna een pull request; de site wordt pas gepubliceerd nadat die pull request is gecontroleerd en samengevoegd in `main`.
+
+Voeg vóór de eerste uitvoering in GitHub onder **Settings → Secrets and variables → Actions** één repository secret toe:
+
+- `OPENAI_API_KEY` — de API-sleutel van het OpenAI-platform.
+
+De sleutel wordt alleen tijdens de workflow gebruikt en wordt niet opgeslagen in de repository of de publieke site.
 
 ## Vervolg
 
