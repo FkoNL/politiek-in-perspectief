@@ -109,7 +109,7 @@ const storiesHtml = Object.entries(grouped).map(([section, stories]) => `
     </div>
   </section>`).join("\n");
 
-const sourceHtml = sources.size ? `<section class="sources" aria-labelledby="bronnen-title"><h2 id="bronnen-title">Bronnen bij deze editie</h2><ul>${[...sources].map(([url, title]) => `<li><a href="${escape(url)}" rel="noopener noreferrer">${escape(title)}</a></li>`).join("")}</ul></section>` : "";
+const sourceHtml = sources.size ? `<section class="sources shell" aria-labelledby="bronnen-title"><h2 id="bronnen-title">Bronnen bij deze editie</h2><ul>${[...sources].map(([url, title]) => `<li><a href="${escape(url)}" rel="noopener noreferrer">${escape(title)}</a></li>`).join("")}</ul></section>` : "";
 const outlookHtml = (edition.outlook ?? []).slice(0, 5).map((item) => `<li>${escape(item)}</li>`).join("");
 
 const page = `<!doctype html>
