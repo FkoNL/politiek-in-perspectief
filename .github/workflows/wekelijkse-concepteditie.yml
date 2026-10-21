@@ -1,0 +1,50 @@
+name: Maak wekelijkse concepteditie
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: wekelijkse-concepteditie
+  cancel-in-progress: false
+
+jobs:
+  maak-concept:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Haal de site op
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gebruik Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Maak een beoordelingsbranch
+        id: branch
+        run: |
+          echo "name=concepteditie-$(date -u +%F)" >> "$GITHUB_OUTPUT"
+          git checkout -B "concepteditie-$(date -u +%F)"
+      - name: Genereer concepteditie met bronvermeldingen
+        run: node scripts/generate-weekly-edition.mjs
+      - name: Bewaar de concepteditie
+        run: |
+          git config user.name "politiek-in-perspectief[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html archief.html edities scripts
+          git diff --cached --quiet && exit 0
+          git commit -m "Maak concepteditie $(date -u +%F)"
+          git push --force origin "${{ steps.branch.outputs.name }}"
+      - name: Open of actualiseer de concept-pullrequest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create --base main --head "${{ steps.branch.outputs.name }}" --title "Concepteditie $(date -u +%F)" --body "Automatisch gegenereerde concepteditie met bronvermeldingen. Controleer de inhoud en merge deze pull request om te publiceren." || \
+          gh pr edit "${{ steps.branch.outputs.name }}" --title "Concepteditie $(date -u +%F)" --body "Automatisch gegenereerde concepteditie met bronvermeldingen. Controleer de inhoud en merge deze pull request om te publiceren."
