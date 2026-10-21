@@ -21,6 +21,32 @@ const dutchDate = (date) => new Intl.DateTimeFormat("nl-NL", {
 }).format(date);
 const range = `${dutchDate(start)}–${dutchDate(end)}`;
 const editionId = iso(end);
+const editionSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["summary", "stories", "outlook"],
+  properties: {
+    summary: { type: "string" },
+    stories: {
+      type: "array",
+      minItems: 1,
+      maxItems: 10,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["section", "kicker", "headline", "body", "why"],
+        properties: {
+          section: { type: "string", enum: ["Nederland", "Europa"] },
+          kicker: { type: "string" },
+          headline: { type: "string" },
+          body: { type: "string" },
+          why: { type: "string" }
+        }
+      }
+    },
+    outlook: { type: "array", maxItems: 5, items: { type: "string" } }
+  }
+};
 
 const prompt = `Je bent eindredacteur van de onafhankelijke, Nederlandstalige wekelijkse site “Politiek in Perspectief”.
 
@@ -28,7 +54,7 @@ Maak een neutrale concepteditie voor ${range}. Zoek op het web en selecteer alle
 
 Maak geen speculaties, opinies of onbevestigde beweringen. Vermeld voorstellen nadrukkelijk als voorstel en besluiten als besluit. Kies maximaal 10 onderwerpen. Schrijf helder en rustig, zonder partijpolitieke kleur. Iedere opgenomen bewering moet door minstens één gevonden bron worden gedragen.
 
-Geef uitsluitend geldig JSON terug, zonder markdown, volgens dit schema:
+Vul uitsluitend dit JSON-schema in:
 {
   "summary": "120-170 woorden",
   "stories": [{
@@ -41,7 +67,7 @@ Geef uitsluitend geldig JSON terug, zonder markdown, volgens dit schema:
   "outlook": ["maximaal 5 concrete aandachtspunten voor komende week"]
 }
 
-Gebruik webzoeking verplicht en plaats de broncitaten bij de inhoud die zij ondersteunen.`;
+Gebruik webzoeking verplicht. De applicatie verzamelt de bronlinks apart uit de zoekresultaten.`;
 
 const response = await fetch("https://api.openai.com/v1/responses", {
   method: "POST",
@@ -54,6 +80,7 @@ const response = await fetch("https://api.openai.com/v1/responses", {
     tools: [{ type: "web_search", search_context_size: "high" }],
     tool_choice: "required",
     include: ["web_search_call.action.sources"],
+    text: { format: { type: "json_schema", name: "weekly_edition", strict: true, schema: editionSchema } },
     input: prompt
   })
 });
