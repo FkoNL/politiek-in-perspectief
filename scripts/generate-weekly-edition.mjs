@@ -3,6 +3,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const editionDirectory = path.join(root, "edities");
+const imageDirectory = path.join(root, "assets", "edities");
 const apiKey = process.env.OPENAI_API_KEY;
 
 if (!apiKey) {
@@ -111,11 +112,32 @@ const storiesHtml = Object.entries(grouped).map(([section, stories]) => `
 
 const sourceHtml = sources.size ? `<section class="sources shell" aria-labelledby="bronnen-title"><h2 id="bronnen-title">Bronnen bij deze editie</h2><ul>${[...sources].map(([url, title]) => `<li><a href="${escape(url)}" rel="noopener noreferrer">${escape(title)}</a></li>`).join("")}</ul></section>` : "";
 const outlookHtml = (edition.outlook ?? []).slice(0, 5).map((item) => `<li>${escape(item)}</li>`).join("");
+const illustrationPrompt = `Use case: stylized-concept. Asset type: editorial hero illustration for a Dutch public-affairs weekly. Primary request: create one calm, original visual metaphor for this week's political themes: ${edition.stories.slice(0, 5).map((story) => story.headline).join("; ")}. Style/medium: refined paper-cut editorial illustration with subtle ink texture, suitable for a serious European newspaper magazine. Composition/framing: horizontal landscape, clear focal point, spacious and calm. Color palette: moss green, warm off-white, muted rust orange and charcoal. Constraints: no people, no faces, no politician likenesses, no party symbols, no flags, no maps presented as fact, no text, no letters, no logos, no watermark, no photorealism.`;
+const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
+  method: "POST",
+  headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+  body: JSON.stringify({
+    model: "gpt-image-2.5-flare",
+    prompt: illustrationPrompt,
+    size: "1536x1024",
+    quality: "low",
+    output_format: "webp",
+    background: "opaque"
+  })
+});
+if (!imageResponse.ok) throw new Error(`OpenAI afbeeldingsfout: ${imageResponse.status} ${await imageResponse.text()}`);
+const image = await imageResponse.json();
+if (!image.data?.[0]?.b64_json) throw new Error("De afbeeldings-API gaf geen illustratie terug.");
+await mkdir(imageDirectory, { recursive: true });
+const imageFile = `${editionId}.webp`;
+await writeFile(path.join(imageDirectory, imageFile), Buffer.from(image.data[0].b64_json, "base64"));
+const illustrationHtml = `<figure class="edition-illustration shell"><img src="assets/edities/${imageFile}" alt="Abstracte redactionele illustratie bij de politieke week van ${escape(range)}." width="1536" height="1024"><figcaption>Gegenereerde illustratie bij deze editie.</figcaption></figure>`;
 
 const page = `<!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Wekelijkse politieke context van ${range}."><title>Weekblad ${range} — Politiek in Perspectief</title><link rel="stylesheet" href="assets/styles.css"></head>
 <body><a class="skip-link" href="#inhoud">Direct naar de inhoud</a><header class="site-header"><div class="shell header-inner"><a class="wordmark" href="index.html">Politiek <span>in Perspectief</span></a><nav aria-label="Hoofdnavigatie"><a href="index.html">Deze week</a><a href="archief.html">Archief</a><a href="#over">Over</a></nav></div></header>
 <main id="inhoud"><section class="hero"><div class="shell hero-inner"><p class="eyebrow">WEEKBLAD · ${escape(range).toUpperCase()}</p><h1>De week, in het juiste perspectief.</h1><p class="intro">Een rustig overzicht van de belangrijkste politieke ontwikkelingen in Nederland en Europa — wat er is besloten, wat nog openligt en waarom dat ertoe doet.</p><a class="button" href="#samenvatting">Lees het overzicht</a></div></section>
+${illustrationHtml}
 <section class="brief shell" id="samenvatting"><p class="eyebrow">IN ÉÉN MINUUT</p><h2>De samenvatting</h2><p>${escape(edition.summary)}</p></section>
 <nav class="edition-nav shell" aria-label="Onderwerpen in deze editie"><p>Onderwerpen in deze editie</p>${Object.keys(grouped).map((section) => `<a href="#${section.toLowerCase()}">${section}</a>`).join("")}<a href="#vooruitblik">Vooruitblik</a></nav>
 ${storiesHtml}
@@ -131,7 +153,7 @@ try {
   await writeFile(firstEdition, existingIndex.replaceAll('href="assets/styles.css"', 'href="../assets/styles.css"').replaceAll('href="index.html"', 'href="../index.html"').replaceAll('href="archief.html"', 'href="../archief.html"'));
 }
 await writeFile(path.join(root, "index.html"), page);
-await writeFile(path.join(editionDirectory, `${editionId}.html`), page.replaceAll('href="assets/styles.css"', 'href="../assets/styles.css"').replaceAll('href="index.html"', 'href="../index.html"').replaceAll('href="archief.html"', 'href="../archief.html"'));
+await writeFile(path.join(editionDirectory, `${editionId}.html`), page.replaceAll('href="assets/styles.css"', 'href="../assets/styles.css"').replaceAll('href="index.html"', 'href="../index.html"').replaceAll('href="archief.html"', 'href="../archief.html"').replaceAll('src="assets/', 'src="../assets/'));
 
 const files = (await readdir(editionDirectory)).filter((file) => /^\d{4}-\d{2}-\d{2}\.html$/.test(file)).sort().reverse();
 const archiveItems = await Promise.all(files.map(async (file) => {
