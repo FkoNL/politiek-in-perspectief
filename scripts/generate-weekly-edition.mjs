@@ -76,7 +76,8 @@ const response = await fetch("https://api.openai.com/v1/responses", {
     Authorization: `Bearer ${apiKey}`
   },
   body: JSON.stringify({
-    model: "gpt-5.5",
+    model: "gpt-6-luna",
+    reasoning: { effort: "low" },
     tools: [{ type: "web_search", search_context_size: "high" }],
     tool_choice: "required",
     include: ["web_search_call.action.sources"],
