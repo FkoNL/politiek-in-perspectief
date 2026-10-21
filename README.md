@@ -16,13 +16,13 @@ De openbare site bevat geen API-sleutels. De workflow heeft uitsluitend de stand
 
 ## Wekelijkse concepteditie
 
-De workflow `.github/workflows/wekelijkse-concepteditie.yml` loopt elke maandag om 07:00 UTC. Hij gebruikt de OpenAI Responses API met webzoeking om een concepteditie te maken, inclusief klikbare bronvermeldingen. De workflow opent daarna een pull request; de site wordt pas gepubliceerd nadat die pull request is gecontroleerd en samengevoegd in `main`.
+De workflow `.github/workflows/wekelijkse-concepteditie.yml` loopt elke maandag om 07:00 UTC. Hij gebruikt de OpenAI Responses API met webzoeking om een concepteditie te maken, inclusief klikbare bronvermeldingen én één oorspronkelijke, AI-gegenereerde weekillustratie. De workflow opent daarna een pull request; de site wordt pas gepubliceerd nadat die pull request is gecontroleerd en samengevoegd in `main`.
 
 Voeg vóór de eerste uitvoering in GitHub onder **Settings → Secrets and variables → Actions** één repository secret toe:
 
 - `OPENAI_API_KEY` — de API-sleutel van het OpenAI-platform.
 
-De sleutel wordt alleen tijdens de workflow gebruikt en wordt niet opgeslagen in de repository of de publieke site.
+De sleutel wordt alleen tijdens de workflow gebruikt en wordt niet opgeslagen in de repository of de publieke site. De gegenereerde illustratie bevat geen portretten, politieke logo's, tekst of nieuwsbeelden en wordt bij de editie opgeslagen.
 
 ## Vervolg
 
