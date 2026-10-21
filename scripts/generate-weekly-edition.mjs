@@ -87,7 +87,13 @@ const response = await fetch("https://api.openai.com/v1/responses", {
 
 if (!response.ok) throw new Error(`OpenAI API-fout: ${response.status} ${await response.text()}`);
 const result = await response.json();
-const text = result.output_text?.trim().replace(/^```(?:json)?\s*|\s*```$/g, "");
+const text = (result.output ?? [])
+  .flatMap((item) => item.content ?? [])
+  .filter((content) => content.type === "output_text")
+  .map((content) => content.text)
+  .join("")
+  .trim()
+  .replace(/^```(?:json)?\s*|\s*```$/g, "");
 let edition;
 try {
   edition = JSON.parse(text);
