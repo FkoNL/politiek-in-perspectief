@@ -172,7 +172,7 @@ const page = `<!doctype html>
 <body><a class="skip-link" href="#inhoud">Direct naar de inhoud</a><header class="site-header"><div class="shell header-inner"><a class="wordmark" href="index.html">Politiek <span>in Perspectief</span></a><nav aria-label="Hoofdnavigatie"><a href="index.html">Deze week</a><a href="archief.html">Archief</a><a href="#over">Over</a></nav></div></header>
 <main id="inhoud"><section class="hero"><div class="shell hero-inner"><p class="eyebrow">WEEKBLAD · ${escape(range).toUpperCase()}</p><h1>De week, in het juiste perspectief.</h1><p class="intro">Een rustig overzicht van de belangrijkste politieke ontwikkelingen in Nederland en Europa — wat er is besloten, wat nog openligt en waarom dat ertoe doet.</p><a class="button" href="#samenvatting">Lees het overzicht</a></div></section>
 ${illustrationHtml}
-<section class="brief shell" id="samenvatting"><p class="eyebrow">IN ÉÉN MINUUT</p><h2>De samenvatting</h2><p>${escape(edition.summary)}</p></section>
+<section class="brief shell" id="samenvatting"><div class="brief-label"><p class="eyebrow">IN ÉÉN MINUUT</p><h2>De samenvatting</h2></div><div class="brief-copy"><p>${escape(edition.summary)}</p></div></section>
 <nav class="edition-nav shell" aria-label="Onderwerpen in deze editie"><p>Onderwerpen in deze editie</p>${Object.keys(grouped).map((section) => `<a href="#${section.toLowerCase()}">${section}</a>`).join("")}<a href="#vooruitblik">Vooruitblik</a></nav>
 ${storiesHtml}
 <section class="outlook shell" id="vooruitblik"><p class="eyebrow">VOORUITBLIK</p><h2>Waar we de komende weken op letten</h2><ol>${outlookHtml}</ol></section>${sourceHtml}
