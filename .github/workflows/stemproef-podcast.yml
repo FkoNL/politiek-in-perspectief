@@ -1,7 +1,16 @@
-name: Maak stemproef voor podcast
+name: Maak podcast-stemproef
 
 on:
   workflow_dispatch:
+    inputs:
+      fragment:
+        description: Kies de lengte van de stemproef
+        required: true
+        default: minuut
+        type: choice
+        options:
+          - seconden
+          - minuut
 
 permissions:
   contents: write
@@ -15,21 +24,34 @@ jobs:
     steps:
       - name: Haal de site op
         uses: actions/checkout@v4
+      - name: Bepaal tekst en bestandsnaam
+        id: proef
+        run: |
+          if [ "${{ inputs.fragment }}" = "minuut" ]; then
+            echo "bestand=stemproef-1-minuut.mp3" >> "$GITHUB_OUTPUT"
+            echo 'tekst=Welkom bij Politiek in Perspectief. In enkele minuten hoor je wat deze politieke week betekent. Europa werkte deze week aan de grote lijnen: veiligheid, energie en de economische koers. Voor Nederland blijft daarbij de vraag hoe Europese afspraken uitwerken in het dagelijks leven. In Den Haag ging het over de ruimte om te investeren, en over wat er nodig is voor bereikbaarheid, wonen en publieke voorzieningen. Achter de besluiten gaan keuzes schuil: welke problemen krijgen voorrang, wie draagt de kosten, en wat merken mensen daarvan? Politiek in Perspectief brengt de hoofdlijnen samen, met aandacht voor de context. Zo hoor je niet alleen wat er is besloten, maar ook waarom het ertoe doet.' >> "$GITHUB_OUTPUT"
+          else
+            echo "bestand=stemproef-10-seconden.mp3" >> "$GITHUB_OUTPUT"
+            echo 'tekst=Welkom bij Politiek in Perspectief. In enkele minuten hoor je wat deze politieke week betekent.' >> "$GITHUB_OUTPUT"
+          fi
       - name: Maak de stemproef
         run: |
           mkdir -p assets/podcast
+          jq -n \
+            --arg input "${{ steps.proef.outputs.tekst }}" \
+            '{
+              model: "gpt-4o-mini-tts",
+              voice: "marin",
+              response_format: "mp3",
+              input: $input,
+              instructions: "Spreek rustig, helder en warm Nederlands. Houd het tempo bedachtzaam en journalistiek, zonder opgewekte reclamesfeer."
+            }' > aanvraag.json
           curl --fail --silent --show-error https://api.openai.com/v1/audio/speech \
             -H "Authorization: Bearer ${OPENAI_API_KEY}" \
             -H "Content-Type: application/json" \
-            -d '{
-              "model": "gpt-4o-mini-tts",
-              "voice": "marin",
-              "response_format": "mp3",
-              "input": "Welkom bij Politiek in Perspectief. In enkele minuten hoor je wat deze politieke week betekent.",
-              "instructions": "Spreek rustig, helder en warm Nederlands. Houd het tempo bedachtzaam en journalistiek, zonder opgewekte reclamesfeer."
-            }' \
-            --output assets/podcast/stemproef-10-seconden.mp3
-          test -s assets/podcast/stemproef-10-seconden.mp3
+            --data @aanvraag.json \
+            --output "assets/podcast/${{ steps.proef.outputs.bestand }}"
+          test -s "assets/podcast/${{ steps.proef.outputs.bestand }}"
       - name: Maak een concept-pullrequest
         env:
           GH_TOKEN: ${{ github.token }}
@@ -38,7 +60,7 @@ jobs:
           git checkout -b "${branch}"
           git config user.name "politiek-in-perspectief[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/podcast/stemproef-10-seconden.mp3
+          git add assets/podcast
           git commit -m "Voeg podcast-stemproef toe"
           git push origin "${branch}"
-          gh pr create --base main --head "${branch}" --draft --title "Stemproef voor podcast" --body "Korte AI-stemproef van circa tien seconden. Nog niet gepubliceerd op de website."
+          gh pr create --base main --head "${branch}" --draft --title "Stemproef voor podcast" --body "AI-stemproef van circa ${{ inputs.fragment }}. Nog niet gepubliceerd op de website."
