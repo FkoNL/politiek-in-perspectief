@@ -144,7 +144,7 @@ const storiesHtml = Object.entries(grouped).map(([section, stories]) => `
     </div>
   </section>`).join("\n");
 
-const sourceHtml = sources.size ? `<section class="sources shell" aria-labelledby="bronnen-title"><h2 id="bronnen-title">Bronnen bij deze editie</h2><ul>${[...sources].map(([url, title]) => `<li><a href="${escape(url)}" rel="noopener noreferrer">${escape(title)}</a></li>`).join("")}</ul></section>` : "";
+const sourceHtml = sources.size ? `<details class="sources shell"><summary>Bronnen bij deze editie</summary><ul>${[...sources].map(([url, title]) => `<li><a href="${escape(url)}" rel="noopener noreferrer">${escape(title)}</a></li>`).join("")}</ul></details>` : "";
 const outlookHtml = (edition.outlook ?? []).slice(0, 5).map((item) => `<li>${escape(item)}</li>`).join("");
 const illustrationPrompt = `Use case: stylized-concept. Asset type: editorial hero illustration for a Dutch public-affairs weekly. Primary request: create one calm, original visual metaphor for this week's political themes: ${edition.stories.slice(0, 5).map((story) => story.headline).join("; ")}. Style/medium: refined paper-cut editorial illustration with subtle ink texture, suitable for a serious European newspaper magazine. Composition/framing: horizontal landscape, clear focal point, spacious and calm. Color palette: moss green, warm off-white, muted rust orange and charcoal. Constraints: no people, no faces, no politician likenesses, no party symbols, no flags, no maps presented as fact, no text, no letters, no logos, no watermark, no photorealism.`;
 const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
