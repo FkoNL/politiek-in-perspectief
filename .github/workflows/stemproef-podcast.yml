@@ -1,0 +1,44 @@
+name: Maak stemproef voor podcast
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  stemproef:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Haal de site op
+        uses: actions/checkout@v4
+      - name: Maak de stemproef
+        run: |
+          mkdir -p assets/podcast
+          curl --fail --silent --show-error https://api.openai.com/v1/audio/speech \
+            -H "Authorization: Bearer ${OPENAI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "model": "gpt-4o-mini-tts",
+              "voice": "marin",
+              "response_format": "mp3",
+              "input": "Welkom bij Politiek in Perspectief. In enkele minuten hoor je wat deze politieke week betekent.",
+              "instructions": "Spreek rustig, helder en warm Nederlands. Houd het tempo bedachtzaam en journalistiek, zonder opgewekte reclamesfeer."
+            }' \
+            --output assets/podcast/stemproef-10-seconden.mp3
+          test -s assets/podcast/stemproef-10-seconden.mp3
+      - name: Maak een concept-pullrequest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          branch="stemproef-${GITHUB_RUN_ID}"
+          git checkout -b "${branch}"
+          git config user.name "politiek-in-perspectief[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/podcast/stemproef-10-seconden.mp3
+          git commit -m "Voeg podcast-stemproef toe"
+          git push origin "${branch}"
+          gh pr create --base main --head "${branch}" --draft --title "Stemproef voor podcast" --body "Korte AI-stemproef van circa tien seconden. Nog niet gepubliceerd op de website."
