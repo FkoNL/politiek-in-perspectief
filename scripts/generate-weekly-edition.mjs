@@ -10,7 +10,11 @@ if (!apiKey) {
   throw new Error("OPENAI_API_KEY ontbreekt. Voeg deze alleen toe als GitHub Secret.");
 }
 
-const today = new Date();
+const requestedDate = process.env.EDITION_DATE;
+const today = requestedDate ? new Date(`${requestedDate}T00:00:00Z`) : new Date();
+if (Number.isNaN(today.getTime()) || (requestedDate && today.toISOString().slice(0, 10) !== requestedDate)) {
+  throw new Error("EDITION_DATE moet een geldige datum in YYYY-MM-DD zijn.");
+}
 const end = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - 1));
 const start = new Date(end);
 start.setUTCDate(end.getUTCDate() - 6);
