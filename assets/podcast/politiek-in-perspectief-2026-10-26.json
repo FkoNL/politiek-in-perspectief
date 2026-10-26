@@ -1,0 +1,95 @@
+{
+  "title": "Politiek in Perspectief — 26 oktober 2026",
+  "status": "klaar",
+  "publication_date": "2026-10-26",
+  "period": "19–25 oktober 2026",
+  "ai_voice": true,
+  "disclosure": "Deze aflevering is ingesproken met een AI-stem, op basis van menselijke instructies.",
+  "voice": "marin",
+  "model": "gpt-4o-mini-tts",
+  "duration_seconds": 519.288163,
+  "raw_duration_seconds": 519.25,
+  "tempo_adjustment": 1,
+  "narration_speed": 1,
+  "narration_instructions": "Spreek rustig, helder en warm Nederlands. Houd het tempo bedachtzaam en journalistiek, zonder opgewekte reclamesfeer.",
+  "word_count": 1105,
+  "source_edition": "edities/2026-10-25.html",
+  "source_blob_sha": "83beeae17652f51386230a63f56f03fb873f4276",
+  "generated_at": "2026-10-26T12:26:03.856Z",
+  "chapters": [
+    {
+      "title": "Opening",
+      "start_seconds": 0
+    },
+    {
+      "title": "Studieschulden en de onderwijsbegroting",
+      "start_seconds": 34.3
+    },
+    {
+      "title": "Een kwetsbare digitale overheid",
+      "start_seconds": 103.25
+    },
+    {
+      "title": "Eenvoudiger digitale regels in Europa",
+      "start_seconds": 169.65
+    },
+    {
+      "title": "Biologische producten en vertrouwen in het keurmerk",
+      "start_seconds": 231.05
+    },
+    {
+      "title": "De Europese markt voor uitstootrechten",
+      "start_seconds": 297.15
+    },
+    {
+      "title": "Een Europese bedrijfsvorm",
+      "start_seconds": 362.2
+    },
+    {
+      "title": "Landbouw na 2027",
+      "start_seconds": 427.45
+    },
+    {
+      "title": "Vooruitblik en afsluiting",
+      "start_seconds": 478
+    }
+  ],
+  "sources": [
+    {
+      "title": "Rijksoverheid – Renteplafond studieleningen",
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/10/22/renteplafond-studieleningen-duurder-en-risicovol-minister-in-gesprek-met-parlement"
+    },
+    {
+      "title": "Rijksoverheid – Websites preventief offline",
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/10/21/aantal-websites-rijksoverheid-preventief-offline-na-kwetsbaarheden-php"
+    },
+    {
+      "title": "Rijksoverheid / NCSC – Ernstige kwetsbaarheden in PHP",
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/10/21/ncsc-ernstige-kwetsbaarheden-in-php"
+    },
+    {
+      "title": "Raad van de EU – Digital rulebook",
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/10/21/digital-rulebook-council-agrees-position-to-simplify-data-protection-privacy-and-cyber-reporting-rules/"
+    },
+    {
+      "title": "Raad van de EU – Akkoord over biologische landbouw",
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/10/20/council-and-parliament-strike-deal-on-updated-measures-to-support-organic-farming-in-the-eu/"
+    },
+    {
+      "title": "Raad van de EU – Akkoord over marktstabiliteitsreserve",
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/10/21/ets-market-stability-reserve-council-and-parliament-reach-provisional-agreement-on-targeted-amendment/"
+    },
+    {
+      "title": "Raad van de EU – EU Inc.",
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/10/23/eu-inc-council-adopts-position-on-a-new-eu-corporate-law-for-innovative-companies/"
+    },
+    {
+      "title": "Raad van de EU – Landbouwmarkten en MFK 2028–2034",
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/10/19/mff-2028-2034-council-agrees-position-on-the-common-market-organisation-for-agricultural-products/"
+    },
+    {
+      "title": "Raad van de EU – Landbouw- en Visserijraad 26–27 oktober",
+      "url": "https://www.consilium.europa.eu/en/meetings/agrifish/2026/10/26-27/"
+    }
+  ]
+}
