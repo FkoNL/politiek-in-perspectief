@@ -11,6 +11,11 @@ on:
         description: "Publicatiedatum (YYYY-MM-DD); leeg betekent vandaag"
         required: false
         type: string
+      regenerate:
+        description: "Maak een herziene versie van een bestaande editie"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -38,6 +43,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REQUESTED_DATE: ${{ inputs.edition_date }}
+          REGENERATE: ${{ github.event_name == 'workflow_dispatch' && inputs.regenerate }}
         run: |
           edition_date="${REQUESTED_DATE:-$(TZ=Europe/Amsterdam date +%F)}"
           if ! [[ "$edition_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || [ "$(date -d "$edition_date" +%F)" != "$edition_date" ]; then
@@ -45,6 +51,12 @@ jobs:
             exit 1
           fi
           branch="concepteditie-${edition_date}"
+          if [ "$REGENERATE" = "true" ]; then
+            branch="${branch}-herzien-${GITHUB_RUN_ID}"
+            echo "label=Herziene concepteditie" >> "$GITHUB_OUTPUT"
+          else
+            echo "label=Concepteditie" >> "$GITHUB_OUTPUT"
+          fi
           echo "name=$branch" >> "$GITHUB_OUTPUT"
           echo "date=$edition_date" >> "$GITHUB_OUTPUT"
           existing=$(gh pr list --head "$branch" --base main --state all --json url --jq '.[0].url // empty')
@@ -79,6 +91,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BRANCH_NAME: ${{ steps.branch.outputs.name }}
           EDITION_DATE: ${{ steps.branch.outputs.date }}
+          TITLE_LABEL: ${{ steps.branch.outputs.label }}
         run: |
-          url=$(gh pr create --base main --head "$BRANCH_NAME" --title "Concepteditie ${EDITION_DATE}" --body "Automatisch gegenereerde concepteditie met bronvermeldingen. Controleer de inhoud en merge deze pull request om te publiceren.")
+          url=$(gh pr create --base main --head "$BRANCH_NAME" --title "${TITLE_LABEL} ${EDITION_DATE}" --body "Automatisch gegenereerde concepteditie met bronvermeldingen. Controleer de inhoud en merge deze pull request om te publiceren.")
           echo "Concepteditie klaar voor beoordeling: $url" >> "$GITHUB_STEP_SUMMARY"
