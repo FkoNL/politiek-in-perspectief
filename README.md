@@ -14,16 +14,26 @@ Open `index.html` in een browser, of start vanuit deze map een eenvoudige lokale
 
 De openbare site bevat geen API-sleutels. De workflow heeft uitsluitend de standaardrechten die nodig zijn voor GitHub Pages.
 
-## Wekelijkse concepteditie
+## Automatische weekeditie
 
-De workflow `.github/workflows/wekelijkse-concepteditie.yml` loopt elke maandag om 07:00 UTC. Hij gebruikt de OpenAI Responses API met webzoeking om een concepteditie te maken, inclusief klikbare bronvermeldingen én één oorspronkelijke, AI-gegenereerde weekillustratie. De workflow opent daarna een pull request; de site wordt pas gepubliceerd nadat die pull request is gecontroleerd en samengevoegd in `main`.
+De workflow `.github/workflows/wekelijkse-concepteditie.yml` maakt en publiceert iedere maandag om **06:00 Nederlandse tijd** een nieuwe editie over de afgelopen maandag tot en met zondag. Om 06:20 volgt een reservepoging. Als de editie al bestaat, wordt de generatie overgeslagen; er worden dan geen nieuwe OpenAI-aanroepen gedaan.
 
-Voeg vóór de eerste uitvoering in GitHub onder **Settings → Secrets and variables → Actions** één repository secret toe:
+De instructies staan in `prompts/weekly-edition.md`. De editie bevat een samenvatting, een navigeerbare inhoudsopgave, bronvermeldingen en per onderwerp vier onderdelen: wat er gebeurde, waarom het telt, wat volgt en wat te volgen. De streefduur is 10–15 minuten; korter mag wanneer de bronnen minder inhoud bieden. Optionele bronstartpunten per publicatiedatum staan in `research/YYYY-MM-DD.md` en worden opnieuw gecontroleerd tijdens de generatie.
+
+Na geslaagde generatie worden de editie, het archief en de oorspronkelijke AI-illustratie op `main` opgeslagen. De workflow roept vervolgens de Pages-publicatie rechtstreeks aan voor die exacte commit. Er is geen pull request of handmatige goedkeuring meer nodig. Als de generatie mislukt, blijft de bestaande editie staan. Een nieuwe uitvoering kan een al opgeslagen editie alsnog publiceren zonder haar opnieuw te genereren.
+
+Voeg onder **Settings → Secrets and variables → Actions** één repository secret toe:
 
 - `OPENAI_API_KEY` — de API-sleutel van het OpenAI-platform.
 
-De sleutel wordt alleen tijdens de workflow gebruikt en wordt niet opgeslagen in de repository of de publieke site. De gegenereerde illustratie bevat geen portretten, politieke logo's, tekst of nieuwsbeelden en wordt bij de editie opgeslagen.
+De sleutel wordt alleen tijdens de generatie gebruikt en staat niet in de repository of de publieke site. Voor GitHub-publicatie wordt de tijdelijke standaardtoken van Actions gebruikt; een extra API-sleutel is niet nodig.
+
+### Handmatig uitvoeren of herzien
+
+Open **Actions → Maak en publiceer wekelijkse editie → Run workflow**. Laat de publicatiedatum leeg voor vandaag, of vul een datum in om een editie in te halen. De verslagperiode is altijd de laatst voltooide maandag-zondagweek.
+
+Vink **Maak en publiceer een herziene versie van een bestaande editie** aan om een bestaande editie opnieuw te maken en direct te vervangen.
 
 ## Vervolg
 
-De opzet is bewust eenvoudig gehouden. Een latere automatische wekelijkse editie kan nieuwe archiefitems genereren, en een EPUB-export kan als afzonderlijk publicatie-artefact worden toegevoegd zonder de publieke site of secrets te wijzigen.
+Een EPUB-export en een volledige wekelijkse podcast kunnen later aan de publicatie worden toegevoegd.

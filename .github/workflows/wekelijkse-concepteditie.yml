@@ -1,8 +1,8 @@
-name: Maak wekelijkse concepteditie
+name: Maak en publiceer wekelijkse editie
 
 on:
   schedule:
-    # Tweede poging wanneer GitHub de eerste geplande start mist.
+    # Reservepoging; een bestaande editie wordt niet opnieuw gegenereerd.
     - cron: "0,20 6 * * 1"
       timezone: "Europe/Amsterdam"
   workflow_dispatch:
@@ -12,86 +12,87 @@ on:
         required: false
         type: string
       regenerate:
-        description: "Maak een herziene versie van een bestaande editie"
+        description: "Maak en publiceer een herziene versie van een bestaande editie"
         required: false
         default: false
         type: boolean
 
 permissions:
   contents: write
-  pull-requests: write
+  pages: write
+  id-token: write
 
 concurrency:
-  group: wekelijkse-concepteditie
+  group: wekelijkse-editie
   cancel-in-progress: false
 
 jobs:
-  maak-concept:
+  maak-editie:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      commit: ${{ steps.bewaar.outputs.commit }}
     steps:
       - name: Haal de site op
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
       - name: Gebruik Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Controleer of de concepteditie al bestaat
-        id: branch
+      - name: Controleer of de editie al bestaat
+        id: editie
         env:
-          GH_TOKEN: ${{ github.token }}
           REQUESTED_DATE: ${{ inputs.edition_date }}
           REGENERATE: ${{ github.event_name == 'workflow_dispatch' && inputs.regenerate }}
         run: |
-          edition_date="${REQUESTED_DATE:-$(TZ=Europe/Amsterdam date +%F)}"
-          if ! [[ "$edition_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || [ "$(date -d "$edition_date" +%F)" != "$edition_date" ]; then
-            echo "Ongeldige publicatiedatum: gebruik YYYY-MM-DD."
-            exit 1
-          fi
-          branch="concepteditie-${edition_date}"
-          if [ "$REGENERATE" = "true" ]; then
-            branch="${branch}-herzien-${GITHUB_RUN_ID}"
-            echo "label=Herziene concepteditie" >> "$GITHUB_OUTPUT"
-          else
-            echo "label=Concepteditie" >> "$GITHUB_OUTPUT"
-          fi
-          echo "name=$branch" >> "$GITHUB_OUTPUT"
-          echo "date=$edition_date" >> "$GITHUB_OUTPUT"
-          existing=$(gh pr list --head "$branch" --base main --state all --json url --jq '.[0].url // empty')
-          if [ -n "$existing" ]; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "Concepteditie bestaat al: $existing" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-            git checkout -B "$branch"
-          fi
-      - name: Genereer concepteditie met bronvermeldingen
-        if: steps.branch.outputs.exists == 'false'
+          node --input-type=module <<'NODE'
+          import { access, appendFile } from "node:fs/promises";
+          const date = process.env.REQUESTED_DATE || new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Amsterdam" }).format(new Date());
+          const today = new Date(`${date}T00:00:00Z`);
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(today.getTime()) || today.toISOString().slice(0, 10) !== date) {
+            throw new Error("Ongeldige publicatiedatum: gebruik YYYY-MM-DD.");
+          }
+          const end = new Date(today);
+          end.setUTCDate(end.getUTCDate() - (end.getUTCDay() + 6) % 7 - 1);
+          const file = `edities/${end.toISOString().slice(0, 10)}.html`;
+          let exists = false;
+          try { await access(file); exists = true; } catch (error) { if (error.code !== "ENOENT") throw error; }
+          const generate = process.env.REGENERATE === "true" || !exists;
+          await appendFile(process.env.GITHUB_OUTPUT, `date=${date}\ngenerate=${generate}\n`);
+          await appendFile(process.env.GITHUB_STEP_SUMMARY, generate ? `Nieuwe editie voor ${date} wordt gemaakt en gepubliceerd.\n` : `Editie bestaat al (${file}); geen nieuwe API-aanroep. De bestaande site wordt gepubliceerd.\n`);
+          NODE
+      - name: Genereer editie met bronvermeldingen
+        if: steps.editie.outputs.generate == 'true'
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITION_DATE: ${{ steps.branch.outputs.date }}
+          EDITION_DATE: ${{ steps.editie.outputs.date }}
         run: node scripts/generate-weekly-edition.mjs
-      - name: Bewaar de concepteditie
-        if: steps.branch.outputs.exists == 'false'
+      - name: Bewaar de editie op main
+        id: bewaar
         env:
-          BRANCH_NAME: ${{ steps.branch.outputs.name }}
-          EDITION_DATE: ${{ steps.branch.outputs.date }}
+          EDITION_DATE: ${{ steps.editie.outputs.date }}
         run: |
           git config user.name "politiek-in-perspectief[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html archief.html edities scripts assets/edities
-          git diff --cached --quiet && exit 0
-          git commit -m "Maak concepteditie ${EDITION_DATE}"
-          git push --force-with-lease origin "$BRANCH_NAME"
-      - name: Open de concept-pullrequest
-        if: steps.branch.outputs.exists == 'false'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          BRANCH_NAME: ${{ steps.branch.outputs.name }}
-          EDITION_DATE: ${{ steps.branch.outputs.date }}
-          TITLE_LABEL: ${{ steps.branch.outputs.label }}
-        run: |
-          url=$(gh pr create --base main --head "$BRANCH_NAME" --title "${TITLE_LABEL} ${EDITION_DATE}" --body "Automatisch gegenereerde concepteditie met bronvermeldingen. Controleer de inhoud en merge deze pull request om te publiceren.")
-          echo "Concepteditie klaar voor beoordeling: $url" >> "$GITHUB_STEP_SUMMARY"
+          git add index.html archief.html edities assets/edities
+          if ! git diff --cached --quiet; then
+            git commit -m "Publiceer weekeditie ${EDITION_DATE}"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  publiceer:
+    needs: maak-editie
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-pages.yml
+    with:
+      ref: ${{ needs.maak-editie.outputs.commit }}

@@ -4,6 +4,13 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: "Exacte commit die gepubliceerd moet worden"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -23,6 +30,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site
