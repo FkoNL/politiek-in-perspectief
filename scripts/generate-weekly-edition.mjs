@@ -68,9 +68,17 @@ const editionSchema = {
   }
 };
 
-const prompt = (await readFile(path.join(root, "prompts", "weekly-edition.md"), "utf8"))
+let prompt = (await readFile(path.join(root, "prompts", "weekly-edition.md"), "utf8"))
   .replaceAll("{{publication_date}}", dutchDate(today))
   .replaceAll("{{period}}", range);
+
+// Optionele redactionele startpunten; ook deze publicaties moeten worden geverifieerd.
+try {
+  const research = await readFile(path.join(root, "research", `${iso(today)}.md`), "utf8");
+  prompt += `\n\n## Bronstartpunten voor deze editie\nOnderzoek onderstaande aangeleverde bronlinks voordat je de selectie afrondt. Het zijn onderzoeksaanknopingspunten, geen bevestigde feiten. Controleer inhoud, datum en relevantie; laat onbereikbare of onvoldoende onderbouwde bronnen weg of zoek een andere oorspronkelijke publicatie.\n\n${research}`;
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
 
 const response = await fetch("https://api.openai.com/v1/responses", {
   method: "POST",

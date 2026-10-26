@@ -38,6 +38,8 @@ Schrijf feitelijk, genuanceerd, toegankelijk en journalistiek, met betrouwbare, 
 
 ## Onderzoek en bronnen
 
+Rond de brede inventarisatie af voordat je de definitieve onderwerpen kiest. Doe afzonderlijke zoekingen naar Nederlandse kabinetsbesluiten en Kamerwerk, de persberichten van de Raad, de Europese Commissie en de plenaire terugblik van het Europees Parlement/EPRS voor de verslagperiode. Bekijk bij een plenaire vergaderweek ook de begroting, onderwijs, klimaat, burgerrechten en buitenlandse politiek. Een rustige Nederlandse Kamerweek betekent niet automatisch een rustige Europese week. Selecteer pas na deze inventarisatie op relevantie en beschikbare onderbouwing. Stop niet zodra de eerste paar bruikbare berichten gevonden zijn.
+
 Webzoeking is verplicht. Geef voorrang aan rijksoverheid.nl, overheid.nl, tweedekamer.nl, eerstekamer.nl, cbs.nl, europa.eu, ec.europa.eu, consilium.europa.eu, europarl.europa.eu en eprs.europarl.europa.eu. Gebruik andere betrouwbare bronnen wanneer zij noodzakelijke informatie leveren die niet in de primaire bronnen staat. Iedere feitelijke bewering moet worden gedragen door minstens één geraadpleegde bron.
 
 Neem per onderwerp alleen daadwerkelijk gebruikte bronnen op, met een directe https-link naar de specifieke publicatie en een korte herkenbare uitgeversnaam. Een algemene homepage of zoekresultatenpagina is geen vervanging voor de onderliggende publicatie. Als je alleen een titel of zoekfragment hebt, zoek de publicatie verder op; laat een onvoldoende onderbouwd onderwerp weg. Vermeld beperkingen van cijfers en vergelijkingen waar relevant.
