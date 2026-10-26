@@ -1,0 +1,135 @@
+name: Instagram weekcarrousel
+
+on:
+  workflow_run:
+    workflows: [Maak en publiceer wekelijkse editie]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      edition:
+        description: "Editie-ID (zondag YYYY-MM-DD); leeg = nieuwste editie"
+        type: string
+        required: false
+      publish:
+        description: "Publiceer op Instagram (uit = alleen proefbestanden)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: instagram-weekcarrousel
+  cancel-in-progress: false
+
+jobs:
+  kaarten:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_repository.full_name == github.repository &&
+       vars.INSTAGRAM_AUTO_PUBLISH == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      edition: ${{ steps.editie.outputs.edition }}
+      live: ${{ steps.editie.outputs.live }}
+      commit: ${{ steps.commit.outputs.commit }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Installeer kaartenmaker
+        run: |
+          python -m pip install 'Pillow>=11,<13'
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-liberation2
+      - name: Kies editie en publicatiemodus
+        id: editie
+        env:
+          REQUESTED_EDITION: ${{ inputs.edition }}
+          LIVE: ${{ github.event_name == 'workflow_run' || inputs.publish == true }}
+        run: |
+          python - <<'PY'
+          import os, re
+          from pathlib import Path
+          editions = sorted(p.stem for p in Path('edities').glob('*.html') if re.fullmatch(r'\d{4}-\d{2}-\d{2}', p.stem))
+          edition = os.environ.get('REQUESTED_EDITION') or editions[-1]
+          if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', edition) or not Path(f'edities/{edition}.html').is_file():
+              raise ValueError('Editie bestaat niet')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f"edition={edition}\nlive={os.environ['LIVE']}\n")
+          PY
+      - name: Controleer scripts
+        run: python -m unittest discover -s tests -p 'test_instagram*.py'
+      - name: Maak teksten en kaarten
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          INSTAGRAM_TEXT_MODEL: ${{ vars.INSTAGRAM_TEXT_MODEL || 'gpt-6-luna' }}
+          EDITION: ${{ steps.editie.outputs.edition }}
+        run: python scripts/instagram_cards.py --edition "$EDITION"
+      - name: Bewaar proefbestanden
+        uses: actions/upload-artifact@v4
+        with:
+          name: instagram-${{ steps.editie.outputs.edition }}
+          path: assets/instagram/${{ steps.editie.outputs.edition }}/
+      - name: Bewaar openbare afbeeldingen voor Instagram
+        id: commit
+        if: steps.editie.outputs.live == 'true'
+        env:
+          EDITION: ${{ steps.editie.outputs.edition }}
+        run: |
+          git config user.name "politiek-in-perspectief[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "assets/instagram/$EDITION"
+          if ! git diff --cached --quiet; then
+            git commit -m "Maak Instagramkaarten $EDITION"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  website:
+    needs: kaarten
+    if: needs.kaarten.outputs.live == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-pages.yml
+    with:
+      ref: ${{ needs.kaarten.outputs.commit }}
+
+  instagram:
+    needs: [kaarten, website]
+    if: needs.kaarten.outputs.live == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Publiceer carrousel
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+          INSTAGRAM_API_VERSION: ${{ vars.INSTAGRAM_API_VERSION || 'v25.0' }}
+          SITE_URL: https://politiekinperspectief.nl
+          EDITION: ${{ needs.kaarten.outputs.edition }}
+        run: |
+          git config user.name "politiek-in-perspectief[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python scripts/instagram_publish.py --edition "$EDITION"
