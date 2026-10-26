@@ -16,7 +16,7 @@ export function validateScript(script) {
     }
   }
   const words = script.sections.map((section) => section.text).join(" ").trim().split(/\s+/).length;
-  if (words < 900 || words > 1300) throw new Error("De voorbereide aflevering moet ongeveer 900–1300 woorden bevatten.");
+  if (words < 700 || words > 1400) throw new Error("De voorbereide aflevering moet ongeveer 700–1400 woorden bevatten.");
   return words;
 }
 
@@ -61,7 +61,7 @@ export async function generatePodcastTrial() {
     console.log(`Maak fragment ${index + 1}/${script.sections.length}: ${section.title}`);
     const raw = path.join(cache, `fragment-${index}.wav`);
     let cached = false;
-    try { await access(raw); cached = durationOf(raw) > 0; } catch (error) {
+    try { await access(raw); cached = process.env.REGENERATE_AUDIO !== "true" && durationOf(raw) > 0; } catch (error) {
       if (error.code !== "ENOENT" && !error.status) throw error;
     }
     if (cached) {
@@ -137,8 +137,8 @@ export async function generatePodcastTrial() {
     await appendFile(process.env.GITHUB_STEP_SUMMARY, `## Podcastaflevering\n\n${script.title}\n\n- Duur: ${clock(duration)}\n- Woorden: ${words}\n- Stem: ${voice} (AI), rustig tempo zonder versnelling achteraf.\n- Beschikbaar om te beluisteren en beoordelen.\n`);
   }
   const repository = process.env.GITHUB_REPOSITORY || "FkoNL/politiek-in-perspectief";
-  const branch = `podcast-aflevering-${process.env.GITHUB_RUN_ID || "lokaal"}`;
-  await writeFile(path.join(process.env.RUNNER_TEMP || work, "podcast-aflevering-pr.md"), `Aflevering op basis van de editie van ${date}, met de gekozen AI-stem Marin en de rustige aansturing uit de minuutproef. Er wordt geen versnelling achteraf toegepast.\n\nDuur: **${clock(duration)}**.\n\n[Beluister of download de MP3](https://raw.githubusercontent.com/${repository}/${branch}/${mp3}) · [Lees het script](https://github.com/${repository}/blob/${branch}/${transcript})\n\n${script.disclosure}\n\nDe aflevering staat klaar voor beoordeling. De koppeling aan de website, de automatische maandagworkflow en Apple Podcasts volgt afzonderlijk.\n`);
+  const branch = process.env.PODCAST_BRANCH || `podcast-aflevering-${process.env.GITHUB_RUN_ID || "lokaal"}`;
+  await writeFile(path.join(process.env.RUNNER_TEMP || work, "podcast-aflevering-pr.md"), `Aflevering op basis van de editie van ${date}, met de gekozen AI-stem Marin en de rustige aansturing. Er wordt geen versnelling achteraf toegepast.\n\nDuur: **${clock(duration)}**.\n\n[Beluister of download de MP3](https://raw.githubusercontent.com/${repository}/${branch}/${mp3}) · [Lees het script](https://github.com/${repository}/blob/${branch}/${transcript})\n\n${script.disclosure}\n\nDeze aflevering is automatisch aangemaakt na de gepubliceerde maandageditie en staat klaar voor beoordeling.\n`);
   console.log(`Podcastaflevering klaar: ${mp3} (${clock(duration)}).`);
 }
 

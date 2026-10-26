@@ -1,66 +1,109 @@
 name: Maak podcastaflevering
 
 on:
+  workflow_call:
+    inputs:
+      edition_date:
+        description: "Publicatiedatum van de weekeditie (YYYY-MM-DD)"
+        required: true
+        type: string
+      source_ref:
+        description: "Exacte commit van de gepubliceerde weekeditie"
+        required: false
+        default: main
+        type: string
+      regenerate:
+        description: "Maak ook bij een bestaande aflevering opnieuw audio"
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      OPENAI_API_KEY:
+        required: true
   workflow_dispatch:
     inputs:
       edition_date:
-        description: "Datum van het voorbereide podcastscript (YYYY-MM-DD)"
-        required: true
-        default: "2026-10-26"
+        description: "Publicatiedatum (YYYY-MM-DD); leeg betekent vandaag"
+        required: false
         type: string
+      regenerate:
+        description: "Maak een nieuwe versie, ook als deze aflevering al bestaat"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
   pull-requests: write
 
 concurrency:
-  group: volledige-podcastproef
+  group: wekelijkse-podcast
   cancel-in-progress: false
 
 jobs:
-  podcastproef:
+  podcast:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
-      - name: Haal de site en het script op
+      - name: Haal de gepubliceerde editie op
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ inputs.source_ref || 'main' }}
+          fetch-depth: 0
       - name: Gebruik Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Bereid de aflevering voor
+        id: editie
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_DATE: ${{ inputs.edition_date }}
+          SOURCE_REF: ${{ inputs.source_ref || 'main' }}
+          REGENERATE: ${{ inputs.regenerate }}
+        run: node scripts/generate-podcast-script.mjs --prepare
       - name: Zorg voor audioverwerking
+        if: steps.editie.outputs.exists != 'true'
         run: |
           if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
             sudo apt-get update
             sudo apt-get install -y --no-install-recommends ffmpeg
           fi
-      - name: Haal bewaarde audiofragmenten op
-        # Hergebruik afgeronde fragmenten na een tijdelijke API-storing.
+      - name: Haal bewaarde tekst en audiofragmenten op
+        if: steps.editie.outputs.exists != 'true'
         uses: actions/cache/restore@v4
         id: fragmenten
         with:
           path: .podcast-cache
-          key: podcastproef-${{ hashFiles('podcast/scripts/*.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: podcast-${{ steps.editie.outputs.source_sha }}-${{ hashFiles('prompts/podcast.md', 'scripts/generate-podcast-script.mjs') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            podcastproef-${{ hashFiles('podcast/scripts/*.json') }}-
-      - name: Genereer de volledige podcastaflevering
+            podcast-${{ steps.editie.outputs.source_sha }}-${{ hashFiles('prompts/podcast.md', 'scripts/generate-podcast-script.mjs') }}-
+      - name: Maak het luisterscript
+        if: steps.editie.outputs.exists != 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EDITION_DATE: ${{ steps.editie.outputs.date }}
+        run: node scripts/generate-podcast-script.mjs
+      - name: Genereer de rustige volledige aflevering
+        if: steps.editie.outputs.exists != 'true'
         id: audio
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITION_DATE: ${{ inputs.edition_date }}
+          EDITION_DATE: ${{ steps.editie.outputs.date }}
+          PODCAST_BRANCH: ${{ steps.editie.outputs.branch }}
+          REGENERATE_AUDIO: ${{ inputs.regenerate }}
         run: node scripts/generate-podcast-trial.mjs
-      - name: Bewaar afgeronde audiofragmenten
-        if: always()
+      - name: Bewaar afgeronde tekst en audiofragmenten
+        if: always() && steps.editie.outputs.exists != 'true'
         uses: actions/cache/save@v4
         with:
           path: .podcast-cache
           key: ${{ steps.fragmenten.outputs.cache-primary-key }}
       - name: Bewaar MP3, script en metadata als download
+        if: steps.editie.outputs.exists != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: podcast-${{ inputs.edition_date }}-${{ github.run_id }}
+          name: podcast-${{ steps.editie.outputs.date }}-${{ github.run_id }}
           path: |
             ${{ steps.audio.outputs.mp3 }}
             ${{ steps.audio.outputs.transcript }}
@@ -68,19 +111,20 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Zet de aflevering klaar voor beoordeling
+        if: steps.editie.outputs.exists != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          EDITION_DATE: ${{ inputs.edition_date }}
+          EDITION_DATE: ${{ steps.editie.outputs.date }}
+          BRANCH: ${{ steps.editie.outputs.branch }}
           MP3_FILE: ${{ steps.audio.outputs.mp3 }}
           SCRIPT_FILE: ${{ steps.audio.outputs.transcript }}
           META_FILE: ${{ steps.audio.outputs.metadata }}
         run: |
-          branch="podcast-aflevering-${GITHUB_RUN_ID}"
-          git checkout -b "$branch"
+          git checkout -b "$BRANCH"
           git config user.name "politiek-in-perspectief[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$MP3_FILE" "$SCRIPT_FILE" "$META_FILE"
+          git add "podcast/scripts/${EDITION_DATE}.json" "$MP3_FILE" "$SCRIPT_FILE" "$META_FILE"
           git commit -m "Maak podcastaflevering ${EDITION_DATE} met rustige vertelstem"
-          git push origin "$branch"
-          url=$(gh pr create --draft --base main --head "$branch" --title "Podcastaflevering ${EDITION_DATE} — rustige vertelstem" --body-file "$RUNNER_TEMP/podcast-aflevering-pr.md")
+          git push origin "$BRANCH"
+          url=$(gh pr create --draft --base main --head "$BRANCH" --title "Podcastaflevering ${EDITION_DATE} — rustige vertelstem" --body-file "$RUNNER_TEMP/podcast-aflevering-pr.md")
           echo "Aflevering klaar: $url" >> "$GITHUB_STEP_SUMMARY"

@@ -34,6 +34,10 @@ Open **Actions → Maak en publiceer wekelijkse editie → Run workflow**. Laat 
 
 Vink **Maak en publiceer een herziene versie van een bestaande editie** aan om een bestaande editie opnieuw te maken en direct te vervangen.
 
-## Vervolg
+## Wekelijkse podcastaflevering
 
-Een EPUB-export en een volledige wekelijkse podcast kunnen later aan de publicatie worden toegevoegd.
+Na de maandageditie en de Pages-publicatie maakt dezelfde workflow automatisch een volledige podcastaflevering. De aflevering gebruikt de gekozen stem **Marin**, in een rustig, journalistiek Nederlands tempo zonder versnelling achteraf. Het luisterscript wordt uitsluitend opgebouwd uit de zojuist gepubliceerde editie; de MP3, het transcript en de metadata komen in een concept-pull-request te staan en zijn daar direct te downloaden.
+
+Een al bestaande aflevering met dezelfde broneditie wordt herkend. De reservepoging om 06:20 maakt dan geen tweede script of opname. Een handmatige uitvoering staat onder **Actions → Maak podcastaflevering**; kies alleen *opnieuw maken* als een nieuwe versie echt gewenst is.
+
+Een speler op de website, een podcastfeed en distributie naar Apple Podcasts zijn afzonderlijke vervolgstappen.

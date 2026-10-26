@@ -21,6 +21,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  pull-requests: write
 
 concurrency:
   group: wekelijkse-editie
@@ -34,6 +35,7 @@ jobs:
       contents: write
     outputs:
       commit: ${{ steps.bewaar.outputs.commit }}
+      date: ${{ steps.editie.outputs.date }}
     steps:
       - name: Haal de site op
         uses: actions/checkout@v4
@@ -96,3 +98,15 @@ jobs:
     uses: ./.github/workflows/deploy-pages.yml
     with:
       ref: ${{ needs.maak-editie.outputs.commit }}
+
+  podcast:
+    needs: [maak-editie, publiceer]
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/proefaflevering-podcast.yml
+    with:
+      edition_date: ${{ needs.maak-editie.outputs.date }}
+      source_ref: ${{ needs.maak-editie.outputs.commit }}
+    secrets:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
