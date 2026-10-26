@@ -1,6 +1,6 @@
 import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { renderStory } from "./render-story.mjs";
+import { renderStory, storyId } from "./render-story.mjs";
 
 const root = process.cwd();
 const editionDirectory = path.join(root, "edities");
@@ -16,7 +16,9 @@ const today = requestedDate ? new Date(`${requestedDate}T00:00:00Z`) : new Date(
 if (Number.isNaN(today.getTime()) || (requestedDate && today.toISOString().slice(0, 10) !== requestedDate)) {
   throw new Error("EDITION_DATE moet een geldige datum in YYYY-MM-DD zijn.");
 }
-const end = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - 1));
+// Ook bij handmatig inhalen altijd de laatst voltooide maandag-zondagweek.
+const daysSinceMonday = (today.getUTCDay() + 6) % 7;
+const end = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - daysSinceMonday - 1));
 const start = new Date(end);
 start.setUTCDate(end.getUTCDate() - 6);
 
@@ -39,13 +41,15 @@ const editionSchema = {
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["section", "kicker", "headline", "body", "why", "sources"],
+        required: ["section", "kicker", "headline", "body", "why", "next", "watch", "sources"],
         properties: {
           section: { type: "string", enum: ["Nederland", "Europa"] },
           kicker: { type: "string" },
           headline: { type: "string" },
           body: { type: "string" },
           why: { type: "string" },
+          next: { type: "string" },
+          watch: { type: "string" },
           sources: {
             type: "array",
             minItems: 1,
@@ -64,27 +68,9 @@ const editionSchema = {
   }
 };
 
-const prompt = `Je bent eindredacteur van de onafhankelijke, Nederlandstalige wekelijkse site “Politiek in Perspectief”.
-
-Maak een neutrale concepteditie voor ${range}. Zoek op het web en selecteer alleen ontwikkelingen uit deze periode die aantoonbaar relevant zijn voor Nederlandse politiek, Europees beleid of de relatie daartussen. Geef voorrang aan primaire bronnen: overheid.nl, rijksoverheid.nl, tweedekamer.nl, eerstekamer.nl, europa.eu, consilium.europa.eu, ec.europa.eu, cbs.nl en officiële publicaties. Gebruik andere betrouwbare bronnen alleen wanneer een primaire bron ontbreekt.
-
-Maak geen speculaties, opinies of onbevestigde beweringen. Vermeld voorstellen nadrukkelijk als voorstel en besluiten als besluit. Kies maximaal 10 onderwerpen. Schrijf helder en rustig, zonder partijpolitieke kleur. Iedere opgenomen bewering moet door minstens één gevonden bron worden gedragen.
-
-Vul uitsluitend dit JSON-schema in:
-{
-  "summary": "120-170 woorden",
-  "stories": [{
-    "section": "Nederland of Europa",
-    "kicker": "korte categorie",
-    "headline": "maximaal 90 tekens",
-    "body": "100-150 woorden",
-    "why": "één zin met waarom dit telt",
-    "sources": [{ "title": "korte naam van de uitgever, bijvoorbeeld Rijksoverheid", "url": "volledige https-link naar de gebruikte publicatie" }]
-  }],
-  "outlook": ["maximaal 5 concrete aandachtspunten voor komende week"]
-}
-
-Gebruik webzoeking verplicht. Neem per bericht in sources alleen de daadwerkelijk gebruikte bronnen op, met een directe link naar de publicatie. Schrijf summary, body, why en outlook als platte tekst zonder Markdown, bronlinks of citatiecodes. De applicatie toont de bronnen als aparte links onder het bericht en verzamelt daarnaast de zoekresultaten voor het uitklapbare bronnenoverzicht.`;
+const prompt = (await readFile(path.join(root, "prompts", "weekly-edition.md"), "utf8"))
+  .replaceAll("{{publication_date}}", dutchDate(today))
+  .replaceAll("{{period}}", range);
 
 const response = await fetch("https://api.openai.com/v1/responses", {
   method: "POST",
@@ -122,6 +108,14 @@ try {
 if (!edition.summary || !Array.isArray(edition.stories) || edition.stories.length === 0) {
   throw new Error("De concepteditie mist verplichte onderdelen. Er is niets gepubliceerd.");
 }
+for (const story of edition.stories) {
+  if (["body", "why", "next", "watch"].some((field) => typeof story[field] !== "string" || !story[field].trim()) || !story.sources?.length) {
+    throw new Error("Een bericht mist uitleg, vervolgstappen, aandachtspunten of bronnen. Er is niets gepubliceerd.");
+  }
+}
+
+const readingText = [edition.summary, ...edition.stories.flatMap((story) => [story.headline, story.body, story.why, story.next, story.watch]), ...(edition.outlook ?? [])].join(" ");
+const readingMinutes = Math.max(1, Math.ceil(readingText.trim().split(/\s+/).length / 200));
 
 const escape = (value = "") => String(value).replace(/[&<>\"']/g, (character) => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
@@ -140,9 +134,6 @@ for (const item of result.output ?? []) {
       if (citation.url) sources.set(citation.url, citation.title || citation.url);
     }
   }
-  for (const source of item.action?.sources ?? []) {
-    if (source.url) sources.set(source.url, source.title || source.url);
-  }
 }
 
 const grouped = edition.stories.reduce((groups, story) => {
@@ -151,6 +142,7 @@ const grouped = edition.stories.reduce((groups, story) => {
   return groups;
 }, {});
 const sectionTitle = { Nederland: "Besluiten, geld en ruimte", Europa: "Veiligheid, industrie en de rekening" };
+const contentsHtml = `<details class="edition-contents shell"><summary>Alle onderwerpen in deze editie</summary><ol>${Object.values(grouped).flatMap((stories) => stories.map((story, index) => `<li><a href="#${storyId(story, index)}">${escape(story.headline)}</a></li>`)).join("")}</ol></details>`;
 
 const storiesHtml = Object.entries(grouped).map(([section, stories]) => `
   <section class="news-section" id="${section.toLowerCase()}">
@@ -187,10 +179,11 @@ const illustrationHtml = `<figure class="edition-illustration shell"><img src="a
 const page = `<!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Wekelijkse politieke context van ${range}."><title>Weekblad ${range} — Politiek in Perspectief</title><link rel="stylesheet" href="assets/styles.css"></head>
 <body><a class="skip-link" href="#inhoud">Direct naar de inhoud</a><header class="site-header"><div class="shell header-inner"><a class="wordmark" href="index.html">Politiek <span>in Perspectief</span></a><nav aria-label="Hoofdnavigatie"><a href="index.html">Deze week</a><a href="archief.html">Archief</a><a href="#over">Over</a></nav></div></header>
-<main id="inhoud"><section class="hero"><div class="shell hero-inner"><p class="eyebrow">WEEKBLAD · ${escape(range).toUpperCase()}</p><h1>De week, in het juiste perspectief.</h1><p class="intro">Een rustig overzicht van de belangrijkste politieke ontwikkelingen in Nederland en Europa — wat er is besloten, wat nog openligt en waarom dat ertoe doet.</p><a class="button" href="#samenvatting">Lees het overzicht</a></div></section>
+<main id="inhoud"><section class="hero"><div class="shell hero-inner"><p class="eyebrow">WEEKBLAD · ${escape(dutchDate(today)).toUpperCase()}</p><p class="edition-meta">Terugblik op ${escape(range)} · ${readingMinutes} minuten leestijd</p><h1>De week, in het juiste perspectief.</h1><p class="intro">Een rustig overzicht van de belangrijkste politieke ontwikkelingen in Nederland en Europa — wat er is besloten, wat nog openligt en waarom dat ertoe doet.</p><a class="button" href="#samenvatting">Lees het overzicht</a></div></section>
 ${illustrationHtml}
 <section class="brief shell" id="samenvatting"><div class="brief-label"><p class="eyebrow">IN ÉÉN MINUUT</p><h2>De samenvatting</h2></div><div class="brief-copy"><p>${escape(edition.summary)}</p></div></section>
 <nav class="edition-nav shell" aria-label="Onderwerpen in deze editie"><p>Onderwerpen in deze editie</p>${Object.keys(grouped).map((section) => `<a href="#${section.toLowerCase()}">${section}</a>`).join("")}<a href="#vooruitblik">Vooruitblik</a></nav>
+${contentsHtml}
 ${storiesHtml}
 <section class="outlook shell" id="vooruitblik"><p class="eyebrow">VOORUITBLIK</p><h2>Waar we de komende weken op letten</h2><ol>${outlookHtml}</ol></section>${sourceHtml}
 <section class="about shell" id="over"><p class="eyebrow">OVER DIT PROJECT</p><h2>Minder haast. Meer begrip.</h2><p>Politiek in Perspectief is een onafhankelijke, toegankelijke leesgids voor mensen die de Nederlandse politiek willen volgen zonder meegetrokken te worden in de waan van de dag.</p><p>We scheiden feiten, duiding en open vragen. Zo blijft er ruimte om zelf een oordeel te vormen.</p></section></main><footer class="site-footer"><div class="shell footer-inner"><p>Politiek in Perspectief</p><p>Deze site is met AI gegenereerd op basis van menselijke instructies.</p></div></footer></body></html>`;
