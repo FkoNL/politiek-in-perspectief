@@ -2,9 +2,15 @@ name: Maak wekelijkse concepteditie
 
 on:
   schedule:
-    - cron: "0 6 * * 1"
+    # Tweede poging wanneer GitHub de eerste geplande start mist.
+    - cron: "0,20 6 * * 1"
       timezone: "Europe/Amsterdam"
   workflow_dispatch:
+    inputs:
+      edition_date:
+        description: "Publicatiedatum (YYYY-MM-DD); leeg betekent vandaag"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -17,8 +23,7 @@ concurrency:
 jobs:
   maak-concept:
     runs-on: ubuntu-latest
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    timeout-minutes: 20
     steps:
       - name: Haal de site op
         uses: actions/checkout@v4
@@ -28,24 +33,52 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Maak een beoordelingsbranch
+      - name: Controleer of de concepteditie al bestaat
         id: branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_DATE: ${{ inputs.edition_date }}
         run: |
-          echo "name=concepteditie-$(date -u +%F)" >> "$GITHUB_OUTPUT"
-          git checkout -B "concepteditie-$(date -u +%F)"
+          edition_date="${REQUESTED_DATE:-$(TZ=Europe/Amsterdam date +%F)}"
+          if ! [[ "$edition_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || [ "$(date -d "$edition_date" +%F)" != "$edition_date" ]; then
+            echo "Ongeldige publicatiedatum: gebruik YYYY-MM-DD."
+            exit 1
+          fi
+          branch="concepteditie-${edition_date}"
+          echo "name=$branch" >> "$GITHUB_OUTPUT"
+          echo "date=$edition_date" >> "$GITHUB_OUTPUT"
+          existing=$(gh pr list --head "$branch" --base main --state all --json url --jq '.[0].url // empty')
+          if [ -n "$existing" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Concepteditie bestaat al: $existing" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            git checkout -B "$branch"
+          fi
       - name: Genereer concepteditie met bronvermeldingen
+        if: steps.branch.outputs.exists == 'false'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EDITION_DATE: ${{ steps.branch.outputs.date }}
         run: node scripts/generate-weekly-edition.mjs
       - name: Bewaar de concepteditie
+        if: steps.branch.outputs.exists == 'false'
+        env:
+          BRANCH_NAME: ${{ steps.branch.outputs.name }}
+          EDITION_DATE: ${{ steps.branch.outputs.date }}
         run: |
           git config user.name "politiek-in-perspectief[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html archief.html edities scripts assets/edities
           git diff --cached --quiet && exit 0
-          git commit -m "Maak concepteditie $(date -u +%F)"
-          git push --force origin "${{ steps.branch.outputs.name }}"
-      - name: Open of actualiseer de concept-pullrequest
+          git commit -m "Maak concepteditie ${EDITION_DATE}"
+          git push --force-with-lease origin "$BRANCH_NAME"
+      - name: Open de concept-pullrequest
+        if: steps.branch.outputs.exists == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
+          BRANCH_NAME: ${{ steps.branch.outputs.name }}
+          EDITION_DATE: ${{ steps.branch.outputs.date }}
         run: |
-          gh pr create --base main --head "${{ steps.branch.outputs.name }}" --title "Concepteditie $(date -u +%F)" --body "Automatisch gegenereerde concepteditie met bronvermeldingen. Controleer de inhoud en merge deze pull request om te publiceren." || \
-          gh pr edit "${{ steps.branch.outputs.name }}" --title "Concepteditie $(date -u +%F)" --body "Automatisch gegenereerde concepteditie met bronvermeldingen. Controleer de inhoud en merge deze pull request om te publiceren."
+          url=$(gh pr create --base main --head "$BRANCH_NAME" --title "Concepteditie ${EDITION_DATE}" --body "Automatisch gegenereerde concepteditie met bronvermeldingen. Controleer de inhoud en merge deze pull request om te publiceren.")
+          echo "Concepteditie klaar voor beoordeling: $url" >> "$GITHUB_STEP_SUMMARY"
