@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Politiek in Perspectief</title>
+    <link>https://politiekinperspectief.nl/</link>
+    <language>nl-NL</language>
+    <copyright>© Politiek in Perspectief</copyright>
+    <description><![CDATA[Wekelijkse, rustige duiding bij Nederlandse en Europese politiek.]]></description>
+    <itunes:title>Politiek in Perspectief</itunes:title>
+    <itunes:subtitle>Wekelijkse politieke duiding</itunes:subtitle>
+    <itunes:summary><![CDATA[Wekelijkse, rustige duiding bij Nederlandse en Europese politiek.]]></itunes:summary>
+    <itunes:author>Politiek in Perspectief</itunes:author>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:type>episodic</itunes:type>
+    <itunes:category text="News"><itunes:category text="Politics" /></itunes:category>
+    <itunes:image href="https://politiekinperspectief.nl/assets/podcast/cover-3000.png" />
+    <image>
+      <url>https://politiekinperspectief.nl/assets/podcast/cover-3000.png</url>
+      <title>Politiek in Perspectief</title>
+      <link>https://politiekinperspectief.nl/</link>
+    </image>
+    <item>
+      <title>Politiek in Perspectief — 26 oktober 2026</title>
+      <guid isPermaLink="false">politiek-in-perspectief-2026-10-26</guid>
+      <pubDate>Mon, 26 Oct 2026 06:00:00 GMT</pubDate>
+      <description><![CDATA[Een rustige, journalistieke terugblik op de Nederlandse en Europese politiek van 19–25 oktober 2026.]]></description>
+      <enclosure url="https://politiekinperspectief.nl/assets/podcast/politiek-in-perspectief-2026-10-26.mp3" length="8309266" type="audio/mpeg" />
+      <itunes:duration>00:08:39</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <explicit>false</explicit>
+    </item>
+  </channel>
+</rss>

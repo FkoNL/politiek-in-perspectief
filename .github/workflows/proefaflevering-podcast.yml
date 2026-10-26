@@ -93,6 +93,9 @@ jobs:
           PODCAST_BRANCH: ${{ steps.editie.outputs.branch }}
           REGENERATE_AUDIO: ${{ inputs.regenerate }}
         run: node scripts/generate-podcast-trial.mjs
+      - name: Werk de openbare podcastfeed bij
+        if: steps.editie.outputs.exists != 'true'
+        run: node scripts/generate-podcast-feed.mjs
       - name: Bewaar afgeronde tekst en audiofragmenten
         if: always() && steps.editie.outputs.exists != 'true'
         uses: actions/cache/save@v4
@@ -123,7 +126,7 @@ jobs:
           git checkout -b "$BRANCH"
           git config user.name "politiek-in-perspectief[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "podcast/scripts/${EDITION_DATE}.json" "$MP3_FILE" "$SCRIPT_FILE" "$META_FILE"
+          git add "podcast.xml" "podcast/scripts/${EDITION_DATE}.json" "$MP3_FILE" "$SCRIPT_FILE" "$META_FILE"
           git commit -m "Maak podcastaflevering ${EDITION_DATE} met rustige vertelstem"
           git push origin "$BRANCH"
           url=$(gh pr create --draft --base main --head "$BRANCH" --title "Podcastaflevering ${EDITION_DATE} — rustige vertelstem" --body-file "$RUNNER_TEMP/podcast-aflevering-pr.md")

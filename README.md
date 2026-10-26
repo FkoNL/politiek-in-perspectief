@@ -41,3 +41,7 @@ Na de maandageditie en de Pages-publicatie maakt dezelfde workflow automatisch e
 Een al bestaande aflevering met dezelfde broneditie wordt herkend. De reservepoging om 06:20 maakt dan geen tweede script of opname. Een handmatige uitvoering staat onder **Actions → Maak podcastaflevering**; kies alleen *opnieuw maken* als een nieuwe versie echt gewenst is.
 
 Een speler op de website, een podcastfeed en distributie naar Apple Podcasts zijn afzonderlijke vervolgstappen.
+
+## Podcastfeed en Apple Podcasts
+
+De openbare feed staat op `https://politiekinperspectief.nl/podcast.xml`. Elke gepubliceerde aflevering wordt daarin met een vaste MP3-link, speelduur en cover opgenomen. Voeg deze URL eenmalig toe in Apple Podcasts Connect om de show bij Apple Podcasts in te dienen. Apple kan daarbij om een publieke contact-e-mail voor de podcast vragen; die wordt niet in deze repository opgeslagen.
