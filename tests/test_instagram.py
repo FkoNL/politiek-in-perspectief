@@ -19,7 +19,7 @@ publisher = module('instagram_publish')
 
 
 class InstagramTests(unittest.TestCase):
-    @unittest.skipUnless(importlib.util.find_spec('PIL') and Path('/usr/share/fonts/truetype/liberation2/LiberationSerif-Bold.ttf').exists(), 'Pillow en Linux-lettertypen vereist')
+    @unittest.skipUnless(importlib.util.find_spec('PIL') and any(Path('/usr/share/fonts/truetype', folder, 'LiberationSerif-Bold.ttf').exists() for folder in ('liberation2', 'liberation')), 'Pillow en Linux-lettertypen vereist')
     def test_render_long_cards_in_instagram_dimensions(self):
         from PIL import Image
         data = {'intro': 'Studierente, digitale veiligheid en Europese regels', 'caption': 'Context', 'cards': [
@@ -36,6 +36,21 @@ class InstagramTests(unittest.TestCase):
                 with Image.open(Path(directory) / name) as image:
                     self.assertEqual(image.size, (1080, 1350))
                     self.assertEqual(image.format, 'JPEG')
+
+    def test_generation_schema_enforces_text_limits(self):
+        from unittest.mock import MagicMock
+        data = {'intro': 'Studierente en digitale veiligheid', 'caption': 'Context', 'cards': [
+            {'headline': 'Kop', 'body': 'Inhoud', 'status': '', 'footer': ''}]}
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps({
+            'status': 'completed', 'output': [{'content': [
+                {'type': 'output_text', 'text': json.dumps(data)}]}]}).encode()
+        with patch.dict('os.environ', {'OPENAI_API_KEY': 'test'}), patch.object(cards.urllib.request, 'urlopen', return_value=response) as request:
+            self.assertEqual(cards.summarize('Bron', 'test'), data)
+        payload = json.loads(request.call_args.args[0].data)
+        schema = payload['text']['format']['schema']['properties']
+        self.assertEqual(schema['intro']['maxLength'], 110)
+        self.assertEqual(schema['cards']['items']['properties']['body']['maxLength'], 350)
 
     def test_source_keeps_status_and_removes_scripts(self):
         text = cards.edition_text('<h3>Voorlopig akkoord</h3><p>Nog niet definitief &amp; meer volgt.</p><script>ignore()</script>')

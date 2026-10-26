@@ -58,10 +58,12 @@ def validate(data):
 
 
 def summarize(source, model):
-    properties = {key: {"type": "string"} for key in ("headline", "body", "status", "footer")}
+    properties = {key: {"type": "string", "maxLength": limit}
+                  for key, limit in (("headline", 85), ("body", 350), ("status", 40), ("footer", 140))}
     schema = {"type": "object", "additionalProperties": False,
               "required": ["intro", "cards", "caption"], "properties": {
-                  "intro": {"type": "string"}, "caption": {"type": "string"},
+                  "intro": {"type": "string", "minLength": 1, "maxLength": 110},
+                  "caption": {"type": "string", "minLength": 1, "maxLength": 2000},
                   "cards": {"type": "array", "minItems": 1, "maxItems": 4,
                             "items": {"type": "object", "additionalProperties": False,
                                       "required": list(properties), "properties": properties}}}}
@@ -73,7 +75,9 @@ Toon rustig, toegankelijk en genuanceerd positief; geen clickbait, partijvoorkeu
 Behoud voorbehouden en het verschil tussen voorstel, onderhandelingspositie, voorlopig akkoord en wet.
 Per kaart: headline max 85 tekens; body max 350 tekens; status max 40 tekens; footer max 140 tekens.
 Status mag leeg zijn wanneer geen korte juiste aanduiding past. Footer: betekenis of volgende stap.
-intro max 110 tekens. caption max 2000 tekens: korte context en 'Volledig overzicht en bronnen via de link in bio.'
+intro: noem alleen concrete onderwerpen van deze week, samen maximaal 110 tekens.
+Bijvoorbeeld: Studierente, digitale veiligheid en Europese regels. Geen algemene inleiding of slogan.
+caption max 2000 tekens: korte context en 'Volledig overzicht en bronnen via de link in bio.'
 Alle tekst moet op de bron terug te voeren zijn. Geef alleen het gevraagde JSON-object terug.
 """
     payload = {"model": model, "input": instruction + "\n<editie>\n" + source + "\n</editie>",
@@ -94,10 +98,12 @@ Alle tekst moet op de bron terug te voeren zijn. Geef alleen het gevraagde JSON-
 def render(cards, directory, period):
     from PIL import Image, ImageDraw, ImageFont
     font_dir = Path(os.environ.get("INSTAGRAM_FONT_DIR", "/usr/share/fonts/truetype/liberation2"))
+    if not (font_dir / "LiberationSerif-Bold.ttf").exists() and "INSTAGRAM_FONT_DIR" not in os.environ:
+        font_dir = Path("/usr/share/fonts/truetype/liberation")
     def font(size, serif=False):
         return ImageFont.truetype(str(font_dir / ("LiberationSerif-Bold.ttf" if serif else "LiberationSans-Regular.ttf")), size)
     navy, teal, paper = "#071a32", "#4f8584", "#faf6ed"
-    slides = [{"headline": "De week in perspectief", "body": cards["intro"], "status": "",
+    slides = [{"headline": "De week\nin perspectief", "body": cards["intro"], "status": "",
                "footer": period + "\nMinder haast. Meer begrip."}, *cards["cards"],
               {"headline": "Meer context. Meer perspectief.", "body": "Lees het volledige weekoverzicht, met bronnen en open vragen.",
                "status": "LINK IN BIO", "footer": "politiekinperspectief.nl"}]
@@ -122,7 +128,9 @@ def render(cards, directory, period):
                         current = candidate
                 result.append(current)
             return result
-        for headline_size, body_size in ((88, 44), (80, 42), (72, 40), (64, 38)):
+        is_cover = index == 1
+        sizes = ((142, 52), (134, 50), (126, 48)) if is_cover else ((88, 44), (80, 42), (72, 40), (64, 38))
+        for headline_size, body_size in sizes:
             headline_font, body_font = font(headline_size, True), font(body_size)
             headline_lines, body_lines = lines(slide["headline"], headline_font), lines(slide["body"], body_font)
             body_y = 180 + len(headline_lines) * (headline_size + 4) + 44
@@ -146,12 +154,12 @@ def render(cards, directory, period):
             draw.rectangle((82, 1080, 82 + width, 1130), fill=teal)
             draw.text((98, 1088), slide["status"].upper(), fill="white", font=status_font)
         draw.line((82, 1170, 998, 1170), fill=navy, width=2)
-        footer_font = font(29)
+        footer_font = font(40 if is_cover else 29, is_cover)
         footer_lines = lines(slide["footer"], footer_font, 800)
         if len(footer_lines) > 3:
             raise ValueError("Voettekst past niet")
         for n, line in enumerate(footer_lines):
-            draw.text((82, 1190 + n * 35), line, fill=navy, font=footer_font)
+            draw.text((82, 1190 + n * (46 if is_cover else 35)), line, fill=navy, font=footer_font)
         draw.text((940, 1285), f"{index}/{len(slides)}", fill=navy, font=font(25))
         name = f"{index:02}.jpg"
         image.save(directory / name, quality=95, subsampling=0)
