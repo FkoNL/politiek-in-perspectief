@@ -1,5 +1,6 @@
 import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { renderStory } from "./render-story.mjs";
 
 const root = process.cwd();
 const editionDirectory = path.join(root, "edities");
@@ -38,13 +39,24 @@ const editionSchema = {
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["section", "kicker", "headline", "body", "why"],
+        required: ["section", "kicker", "headline", "body", "why", "sources"],
         properties: {
           section: { type: "string", enum: ["Nederland", "Europa"] },
           kicker: { type: "string" },
           headline: { type: "string" },
           body: { type: "string" },
-          why: { type: "string" }
+          why: { type: "string" },
+          sources: {
+            type: "array",
+            minItems: 1,
+            maxItems: 5,
+            items: {
+              type: "object",
+              additionalProperties: false,
+              required: ["title", "url"],
+              properties: { title: { type: "string" }, url: { type: "string" } }
+            }
+          }
         }
       }
     },
@@ -66,12 +78,13 @@ Vul uitsluitend dit JSON-schema in:
     "kicker": "korte categorie",
     "headline": "maximaal 90 tekens",
     "body": "100-150 woorden",
-    "why": "één zin met waarom dit telt"
+    "why": "één zin met waarom dit telt",
+    "sources": [{ "title": "korte naam van de uitgever, bijvoorbeeld Rijksoverheid", "url": "volledige https-link naar de gebruikte publicatie" }]
   }],
   "outlook": ["maximaal 5 concrete aandachtspunten voor komende week"]
 }
 
-Gebruik webzoeking verplicht. De applicatie verzamelt de bronlinks apart uit de zoekresultaten.`;
+Gebruik webzoeking verplicht. Neem per bericht in sources alleen de daadwerkelijk gebruikte bronnen op, met een directe link naar de publicatie. Schrijf summary, body, why en outlook als platte tekst zonder Markdown, bronlinks of citatiecodes. De applicatie toont de bronnen als aparte links onder het bericht en verzamelt daarnaast de zoekresultaten voor het uitklapbare bronnenoverzicht.`;
 
 const response = await fetch("https://api.openai.com/v1/responses", {
   method: "POST",
@@ -115,6 +128,11 @@ const escape = (value = "") => String(value).replace(/[&<>\"']/g, (character) =>
 })[character]);
 
 const sources = new Map();
+for (const story of edition.stories) {
+  for (const source of story.sources ?? []) {
+    if (source.url) sources.set(source.url, source.title || source.url);
+  }
+}
 for (const item of result.output ?? []) {
   for (const content of item.content ?? []) {
     for (const annotation of content.annotations ?? []) {
@@ -139,12 +157,7 @@ const storiesHtml = Object.entries(grouped).map(([section, stories]) => `
     <div class="section-inner">
       <p class="eyebrow">${section.toUpperCase()}</p>
       <h2>${sectionTitle[section]}</h2>
-      ${stories.map((story, index) => `<article class="news-item">
-        <p class="news-meta">${String(index + 1).padStart(2, "0")} · ${escape(story.kicker)}</p>
-        <h3>${escape(story.headline)}</h3>
-        <p class="news-copy">${escape(story.body)}</p>
-        <p class="question"><span>WAAROM DIT TELT</span>${escape(story.why)}</p>
-      </article>`).join("\n")}
+      ${stories.map(renderStory).join("\n")}
     </div>
   </section>`).join("\n");
 
