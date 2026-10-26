@@ -1,0 +1,43 @@
+{
+  "edition": "2026-10-25",
+  "source_sha256": "51350b697d643b9b290b4e0d51982f09505e61d41cea6ac90d5023e459f7ee70",
+  "images": [
+    "01.jpg",
+    "02.jpg",
+    "03.jpg",
+    "04.jpg",
+    "05.jpg",
+    "06.jpg"
+  ],
+  "caption": "Deze week kwamen in Nederland de kosten van het beoogde renteplafond voor studieleningen en de tijdelijke uitval van overheidswebsites aan bod. In Europa bereikten Raad en Parlement een voorlopig akkoord over biologische regels, terwijl de Raad een onderhandelingspositie over digitale regels vaststelde. Dat zijn verschillende fases: sommige stappen vragen nog om bespreking of formele goedkeuring. Volledig overzicht en bronnen via de link in bio.",
+  "content": {
+    "intro": "Studierente, overheidswebsites, digitale regels en biologische producten.",
+    "caption": "Deze week kwamen in Nederland de kosten van het beoogde renteplafond voor studieleningen en de tijdelijke uitval van overheidswebsites aan bod. In Europa bereikten Raad en Parlement een voorlopig akkoord over biologische regels, terwijl de Raad een onderhandelingspositie over digitale regels vaststelde. Dat zijn verschillende fases: sommige stappen vragen nog om bespreking of formele goedkeuring. Volledig overzicht en bronnen via de link in bio.",
+    "cards": [
+      {
+        "headline": "Studierenteplafond vraagt meer geld dan gereserveerd",
+        "body": "Het voorgestelde plafond van 2,5% voor studieleningen kost volgens de minister minimaal €160 miljoen per jaar. Daarvoor is €40 miljoen gereserveerd. De minister wil de bevindingen en mogelijke alternatieven met de Kamer bespreken; een nieuw besluit is nog niet aangekondigd.",
+        "status": "Voorstel; nog geen nieuw besluit",
+        "footer": "De Kamer bespreekt de financiering en vormgeving tijdens de OCW-begroting op 27 en 29 oktober."
+      },
+      {
+        "headline": "Overheidswebsites tijdelijk offline na PHP-waarschuwing",
+        "body": "Na melding van twee kritieke PHP-kwetsbaarheden gingen meerdere overheidswebsites op 21 oktober uit voorzorg offline. Het NCSC meldde toen geen aanwijzingen voor actief misbruik. Later die dag kwamen beveiligingsupdates beschikbaar.",
+        "status": "Voorzorgsmaatregel; updates beschikbaar",
+        "footer": "Het NCSC adviseerde updates zo snel mogelijk te installeren en systemen afzonderlijk op risico te beoordelen."
+      },
+      {
+        "headline": "Raad stelt onderhandelingspositie over digitale regels vast",
+        "body": "De Raad wil onder meer regels rond gegevensbescherming, cookies en meldingen van cyberincidenten aanpassen. De lidstaten zeggen administratieve verplichtingen te willen vereenvoudigen met behoud van gegevensbescherming. Dit is een onderhandelingsmandaat, geen definitieve wet.",
+        "status": "Onderhandelingsmandaat",
+        "footer": "Onderhandelingen met het Europees Parlement kunnen beginnen zodra het Parlement zijn eigen positie heeft vastgesteld."
+      },
+      {
+        "headline": "Voorlopig akkoord moet biologische regels verduidelijken",
+        "body": "Raad en Europees Parlement spraken onder meer af de omzetgrens voor vrijstelling van certificering voor kleine verkopers van onverpakte biologische producten te verhogen van €20.000 naar €40.000 per jaar. Het akkoord is nog geen definitieve wetgeving.",
+        "status": "Voorlopig akkoord",
+        "footer": "Raad en Parlement moeten het akkoord nog bekrachtigen en juridisch afronden; de instellingen streven naar aanneming vóór eind 2026."
+      }
+    ]
+  }
+}
