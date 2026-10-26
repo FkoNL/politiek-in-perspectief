@@ -1,0 +1,71 @@
+name: Maak volledige podcastproef
+
+on:
+  workflow_dispatch:
+    inputs:
+      edition_date:
+        description: "Datum van het voorbereide podcastscript (YYYY-MM-DD)"
+        required: true
+        default: "2026-10-26"
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: volledige-podcastproef
+  cancel-in-progress: false
+
+jobs:
+  podcastproef:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Haal de site en het script op
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Gebruik Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Zorg voor audioverwerking
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends ffmpeg
+          fi
+      - name: Maak de volledige proefaflevering
+        id: audio
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EDITION_DATE: ${{ inputs.edition_date }}
+        run: node scripts/generate-podcast-trial.mjs
+      - name: Bewaar MP3, script en metadata als download
+        uses: actions/upload-artifact@v4
+        with:
+          name: podcastproef-${{ inputs.edition_date }}-${{ github.run_id }}
+          path: |
+            ${{ steps.audio.outputs.mp3 }}
+            ${{ steps.audio.outputs.transcript }}
+            ${{ steps.audio.outputs.metadata }}
+          if-no-files-found: error
+          retention-days: 30
+      - name: Zet de proef klaar als concept
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EDITION_DATE: ${{ inputs.edition_date }}
+          MP3_FILE: ${{ steps.audio.outputs.mp3 }}
+          SCRIPT_FILE: ${{ steps.audio.outputs.transcript }}
+          META_FILE: ${{ steps.audio.outputs.metadata }}
+        run: |
+          branch="podcast-proef-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
+          git config user.name "politiek-in-perspectief[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$MP3_FILE" "$SCRIPT_FILE" "$META_FILE"
+          git commit -m "Maak volledige podcastproef ${EDITION_DATE}"
+          git push origin "$branch"
+          url=$(gh pr create --draft --base main --head "$branch" --title "Volledige podcastproef ${EDITION_DATE}" --body-file "$RUNNER_TEMP/podcast-proef-pr.md")
+          echo "Concept klaar: $url" >> "$GITHUB_STEP_SUMMARY"
