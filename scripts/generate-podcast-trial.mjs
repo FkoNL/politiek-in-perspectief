@@ -1,4 +1,4 @@
-import { appendFile, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { access, appendFile, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -54,18 +54,44 @@ export async function generatePodcastTrial() {
   await mkdir(output, { recursive: true });
   const parts = [];
   const instructions = "Spreek rustig, helder en warm Nederlands, met dezelfde neutrale journalistieke vertelstem in alle fragmenten. Houd een natuurlijk tempo van ongeveer 145 tot 150 woorden per minuut. Gebruik korte natuurlijke adempauzes tussen zinnen en alinea's. Geen opgewekte reclamesfeer, geen theatrale nadruk en geen muziek of geluidseffecten. Spreek bedragen en jaartallen natuurlijk uit. Spreek PHP als pee haa pee, AVG als aa vee gee, EU als ee uu en EU Inc. als ee uu ink. Lees uitsluitend de aangeleverde tekst; voeg geen introductie of afsluiting toe.";
+  const signature = createHash("sha256").update(JSON.stringify({ script, model, voice, instructions, speed: 0.98 })).digest("hex");
+  const cache = path.join(root, ".podcast-cache", signature);
+  await mkdir(cache, { recursive: true });
 
   for (const [index, section] of script.sections.entries()) {
     console.log(`Maak fragment ${index + 1}/${script.sections.length}: ${section.title}`);
-    const response = await fetch("https://api.openai.com/v1/audio/speech", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ model, voice, response_format: "wav", speed: 0.98, input: section.text, instructions }),
-      signal: AbortSignal.timeout(180_000)
-    });
-    if (!response.ok) throw new Error(`Spraakgeneratie mislukt bij fragment ${index + 1}: HTTP ${response.status}.`);
-    const raw = path.join(work, `fragment-${index}.wav`);
-    await writeFile(raw, Buffer.from(await response.arrayBuffer()));
+    const raw = path.join(cache, `fragment-${index}.wav`);
+    let cached = false;
+    try { await access(raw); cached = durationOf(raw) > 0; } catch (error) {
+      if (error.code !== "ENOENT" && !error.status) throw error;
+    }
+    if (cached) {
+      console.log(`Gebruik bewaard fragment ${index + 1}.`);
+    } else {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const response = await fetch("https://api.openai.com/v1/audio/speech", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+            body: JSON.stringify({ model, voice, response_format: "wav", speed: 0.98, input: section.text, instructions }),
+            signal: AbortSignal.timeout(90_000)
+          });
+          if (!response.ok) {
+            const error = new Error(`Spraakgeneratie mislukt bij fragment ${index + 1}: HTTP ${response.status}.`);
+            error.retryable = response.status === 429 || response.status >= 500;
+            throw error;
+          }
+          const audio = Buffer.from(await response.arrayBuffer());
+          if (audio.length < 44) throw new Error("De spraak-API gaf geen bruikbaar audiobestand terug.");
+          await writeFile(raw, audio);
+          break;
+        } catch (error) {
+          if (attempt === 2 || !(error.retryable || ["TimeoutError", "AbortError", "TypeError"].includes(error.name))) throw error;
+          console.log(`Tijdelijke onderbreking bij fragment ${index + 1}; poging ${attempt + 2}/3.`);
+          await new Promise((resolve) => setTimeout(resolve, (attempt + 1) * 1000));
+        }
+      }
+    }
     const padded = path.join(work, `fragment-${index}-pauze.wav`);
     execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-i", raw, "-af", "apad=pad_dur=0.35", "-ar", "24000", "-ac", "1", padded]);
     parts.push({ title: section.title, file: padded, duration: durationOf(padded) });

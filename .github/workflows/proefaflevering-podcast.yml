@@ -36,12 +36,27 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y --no-install-recommends ffmpeg
           fi
-      - name: Maak de volledige proefaflevering
+      - name: Haal bewaarde audiofragmenten op
+        # Hergebruik afgeronde fragmenten na een tijdelijke API-storing.
+        uses: actions/cache/restore@v4
+        id: fragmenten
+        with:
+          path: .podcast-cache
+          key: podcastproef-${{ hashFiles('podcast/scripts/*.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            podcastproef-${{ hashFiles('podcast/scripts/*.json') }}-
+      - name: Genereer de volledige proefaflevering
         id: audio
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           EDITION_DATE: ${{ inputs.edition_date }}
         run: node scripts/generate-podcast-trial.mjs
+      - name: Bewaar afgeronde audiofragmenten
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .podcast-cache
+          key: ${{ steps.fragmenten.outputs.cache-primary-key }}
       - name: Bewaar MP3, script en metadata als download
         uses: actions/upload-artifact@v4
         with:
