@@ -1,4 +1,4 @@
-name: Maak volledige podcastproef
+name: Maak podcastaflevering
 
 on:
   workflow_dispatch:
@@ -45,7 +45,7 @@ jobs:
           key: podcastproef-${{ hashFiles('podcast/scripts/*.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             podcastproef-${{ hashFiles('podcast/scripts/*.json') }}-
-      - name: Genereer de volledige proefaflevering
+      - name: Genereer de volledige podcastaflevering
         id: audio
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -60,14 +60,14 @@ jobs:
       - name: Bewaar MP3, script en metadata als download
         uses: actions/upload-artifact@v4
         with:
-          name: podcastproef-${{ inputs.edition_date }}-${{ github.run_id }}
+          name: podcast-${{ inputs.edition_date }}-${{ github.run_id }}
           path: |
             ${{ steps.audio.outputs.mp3 }}
             ${{ steps.audio.outputs.transcript }}
             ${{ steps.audio.outputs.metadata }}
           if-no-files-found: error
           retention-days: 30
-      - name: Zet de proef klaar als concept
+      - name: Zet de aflevering klaar voor beoordeling
         env:
           GH_TOKEN: ${{ github.token }}
           EDITION_DATE: ${{ inputs.edition_date }}
@@ -75,12 +75,12 @@ jobs:
           SCRIPT_FILE: ${{ steps.audio.outputs.transcript }}
           META_FILE: ${{ steps.audio.outputs.metadata }}
         run: |
-          branch="podcast-proef-${GITHUB_RUN_ID}"
+          branch="podcast-aflevering-${GITHUB_RUN_ID}"
           git checkout -b "$branch"
           git config user.name "politiek-in-perspectief[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$MP3_FILE" "$SCRIPT_FILE" "$META_FILE"
-          git commit -m "Maak volledige podcastproef ${EDITION_DATE}"
+          git commit -m "Maak podcastaflevering ${EDITION_DATE} met rustige vertelstem"
           git push origin "$branch"
-          url=$(gh pr create --draft --base main --head "$branch" --title "Volledige podcastproef ${EDITION_DATE}" --body-file "$RUNNER_TEMP/podcast-proef-pr.md")
-          echo "Concept klaar: $url" >> "$GITHUB_STEP_SUMMARY"
+          url=$(gh pr create --draft --base main --head "$branch" --title "Podcastaflevering ${EDITION_DATE} — rustige vertelstem" --body-file "$RUNNER_TEMP/podcast-aflevering-pr.md")
+          echo "Aflevering klaar: $url" >> "$GITHUB_STEP_SUMMARY"
