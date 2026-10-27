@@ -64,6 +64,35 @@ class InstagramTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             cards.validate(data)
 
+    def test_public_images_retry_until_all_bytes_match(self):
+        from unittest.mock import MagicMock
+        import urllib.error
+        manifest = {'edition': '2026-10-25', 'images': ['01.jpg', '02.jpg']}
+        def response(data):
+            result = MagicMock()
+            result.__enter__.return_value.read.return_value = data
+            result.__enter__.return_value.headers.get_content_type.return_value = 'image/jpeg'
+            return result
+        with patch.object(Path, 'read_bytes', return_value=b'correct'), \
+             patch.object(publisher.urllib.request, 'urlopen', side_effect=[
+                 urllib.error.HTTPError('https://example.org', 404, 'Not found', None, None),
+                 response(b'stale'), response(b'correct'), response(b'correct')]) as fetch, \
+             patch.object(publisher.time, 'sleep') as sleep:
+            urls = publisher.public_images(manifest, 'https://example.org')
+        self.assertEqual(len(urls), 2)
+        self.assertEqual(fetch.call_count, 4)
+        self.assertEqual(sleep.call_count, 2)
+
+    def test_public_images_fail_closed_when_unavailable(self):
+        import urllib.error
+        manifest = {'edition': '2026-10-25', 'images': ['01.jpg', '02.jpg']}
+        with patch.object(Path, 'read_bytes', return_value=b'correct'), \
+             patch.object(publisher.urllib.request, 'urlopen', side_effect=urllib.error.URLError('offline')), \
+             patch.object(publisher.time, 'sleep') as sleep:
+            with self.assertRaisesRegex(RuntimeError, 'niets op Instagram geplaatst'):
+                publisher.public_images(manifest, 'https://example.org')
+        self.assertEqual(sleep.call_count, 12)
+
     def test_published_edition_is_not_published_twice(self):
         with tempfile.TemporaryDirectory() as directory:
             state = Path(directory) / 'state.json'
@@ -103,3 +132,4 @@ class InstagramTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
