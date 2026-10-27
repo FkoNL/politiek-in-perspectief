@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import subprocess
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -51,22 +52,32 @@ def wait_ready(container):
 def public_images(manifest, base):
     if not base.startswith("https://"):
         raise ValueError("SITE_URL moet HTTPS gebruiken")
-    urls = []
+    if not 2 <= len(manifest["images"]) <= 10:
+        raise ValueError("Ongeldig aantal afbeeldingen")
     directory = Path(f"assets/instagram/{manifest['edition']}")
+    expected = []
     for name in manifest["images"]:
         if not re.fullmatch(r"\d{2}\.jpg", name):
             raise ValueError("Ongeldige afbeeldingsnaam")
         url = f"{base.rstrip('/')}/{directory.as_posix()}/{name}"
-        with urllib.request.urlopen(url, timeout=30) as response:
-            remote = response.read()
-            if response.headers.get_content_type() != "image/jpeg":
-                raise ValueError("Publieke afbeelding is geen JPEG")
-        if hashlib.sha256(remote).digest() != hashlib.sha256((directory / name).read_bytes()).digest():
-            raise ValueError("De afbeeldingen staan nog niet correct op de website")
-        urls.append(url)
-    if not 2 <= len(urls) <= 10:
-        raise ValueError("Ongeldig aantal afbeeldingen")
-    return urls
+        expected.append((url, hashlib.sha256((directory / name).read_bytes()).digest()))
+    # Pages can report a successful deployment before all edge caches serve it.
+    # Recheck every image together; never publish mismatched or unavailable data.
+    for attempt in range(13):
+        try:
+            for url, digest in expected:
+                with urllib.request.urlopen(url, timeout=10) as response:
+                    remote = response.read()
+                    if response.headers.get_content_type() != "image/jpeg":
+                        raise ValueError("Publieke afbeelding is geen JPEG")
+                if hashlib.sha256(remote).digest() != digest:
+                    raise ValueError("Publieke afbeelding komt niet overeen")
+            return [url for url, _ in expected]
+        except (urllib.error.URLError, TimeoutError, ValueError) as error:
+            if attempt == 12:
+                raise RuntimeError("Afbeeldingen nog niet correct bereikbaar op de website; niets op Instagram geplaatst") from error
+            print(f"Afbeeldingen nog niet beschikbaar of bijgewerkt; opnieuw controleren ({attempt + 1}/12)")
+            time.sleep(10)
 
 
 def publish(manifest, urls, state_path):
@@ -124,3 +135,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
