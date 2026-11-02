@@ -132,7 +132,10 @@ def render(cards, directory, period):
         sizes = ((142, 52), (134, 50), (126, 48)) if is_cover else ((88, 44), (80, 42), (72, 40), (64, 38))
         for headline_size, body_size in sizes:
             headline_font, body_font = font(headline_size, True), font(body_size)
-            headline_lines, body_lines = lines(slide["headline"], headline_font), lines(slide["body"], body_font)
+            try:
+                headline_lines, body_lines = lines(slide["headline"], headline_font), lines(slide["body"], body_font)
+            except ValueError:
+                continue
             body_y = 180 + len(headline_lines) * (headline_size + 4) + 44
             if body_y + len(body_lines) * (body_size + 15) <= 1040:
                 break
