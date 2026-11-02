@@ -126,33 +126,48 @@ export async function generatePodcastScript() {
       } }
     }
   };
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-    body: JSON.stringify({
-      model: "gpt-6-luna", reasoning: { effort: "low" },
-      text: { format: { type: "json_schema", name: "podcast_script", strict: true, schema } },
-      input: [
-        { role: "developer", content: prompt },
-        { role: "user", content: JSON.stringify({ publication_date: period.date, period: `${dutchDate(period.start)}–${dutchDate(period.end)}`, ...edition }) }
-      ]
-    }), signal: AbortSignal.timeout(180_000)
-  });
-  if (!response.ok) throw new Error(`Luisterscript genereren mislukt: HTTP ${response.status}.`);
-  const result = await response.json();
-  const text = (result.output ?? []).flatMap((item) => item.content ?? []).filter((item) => item.type === "output_text").map((item) => item.text).join("");
-  const generated = JSON.parse(text);
   const disclosure = "Deze aflevering is ingesproken met een AI-stem, op basis van menselijke instructies.";
-  const script = {
-    title: `Politiek in Perspectief — ${dutchDate(period.publication)}`,
-    publication_date: period.date, period: `${dutchDate(period.start)}–${dutchDate(period.end)}`,
-    source_edition: period.edition, source_blob_sha: sourceSha, script_prompt_sha: promptSha, disclosure,
-    sections: [
-      { title: "Opening", text: `Welkom bij Politiek in Perspectief. Dit is de editie van ${dutchDate(period.publication)}, met een terugblik op ${dutchDate(period.start)} tot en met ${dutchDate(period.end)}. Deze aflevering is ingesproken met een AI-stem. ${generated.intro}` },
-      ...generated.sections,
-      { title: "Vooruitblik en afsluiting", text: `${generated.outlook} Dit was Politiek in Perspectief. De volledige editie en de aanklikbare bronnen vind je op politiek in perspectief punt en el. Dank voor het luisteren.` }
-    ], sources: edition.sources
-  };
-  validateScript(script);
+  let script;
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const lengthReminder = attempt
+      ? "De vorige versie was te kort. Lever nu aantoonbaar 1.000 tot 1.150 woorden totaal, met voldoende context en duiding per onderwerp."
+      : "Belangrijk: lever 1.000 tot 1.150 woorden totaal, inclusief opening en vooruitblik.";
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model: "gpt-6-luna", reasoning: { effort: "low" },
+        text: { format: { type: "json_schema", name: "podcast_script", strict: true, schema } },
+        input: [
+          { role: "developer", content: prompt },
+          { role: "user", content: JSON.stringify({ publication_date: period.date, period: `${dutchDate(period.start)}–${dutchDate(period.end)}`, length_requirement: lengthReminder, ...edition }) }
+        ]
+      }), signal: AbortSignal.timeout(180_000)
+    });
+    if (!response.ok) throw new Error(`Luisterscript genereren mislukt: HTTP ${response.status}.`);
+    const result = await response.json();
+    const text = (result.output ?? []).flatMap((item) => item.content ?? []).filter((item) => item.type === "output_text").map((item) => item.text).join("");
+    const generated = JSON.parse(text);
+    const candidate = {
+      title: `Politiek in Perspectief — ${dutchDate(period.publication)}`,
+      publication_date: period.date, period: `${dutchDate(period.start)}–${dutchDate(period.end)}`,
+      source_edition: period.edition, source_blob_sha: sourceSha, script_prompt_sha: promptSha, disclosure,
+      sections: [
+        { title: "Opening", text: `Welkom bij Politiek in Perspectief. Dit is de editie van ${dutchDate(period.publication)}, met een terugblik op ${dutchDate(period.start)} tot en met ${dutchDate(period.end)}. Deze aflevering is ingesproken met een AI-stem. ${generated.intro}` },
+        ...generated.sections,
+        { title: "Vooruitblik en afsluiting", text: `${generated.outlook} Dit was Politiek in Perspectief. De volledige editie en de aanklikbare bronnen vind je op politiek in perspectief punt en el. Dank voor het luisteren.` }
+      ], sources: edition.sources
+    };
+    try {
+      validateScript(candidate);
+      script = candidate;
+      break;
+    } catch (error) {
+      lastError = error;
+      console.log(`Luisterscript voldeed niet aan de lengte-eis; poging ${attempt + 2}/2.`);
+    }
+  }
+  if (!script) throw lastError;
   if (/\b(proefaflevering|podcastproef|demo)\b/i.test(script.sections.map((section) => section.text).join(" "))) throw new Error("Het script bevat proeftekst; er wordt geen audio gemaakt.");
   await mkdir(path.dirname(scriptFile), { recursive: true });
   await mkdir(path.dirname(cacheFile), { recursive: true });
