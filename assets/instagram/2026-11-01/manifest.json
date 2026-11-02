@@ -1,0 +1,43 @@
+{
+  "edition": "2026-11-01",
+  "source_sha256": "fb3e1179a14c00997743d28b48f253f5d28cdb48d6171b10a2564af6139ca729",
+  "images": [
+    "01.jpg",
+    "02.jpg",
+    "03.jpg",
+    "04.jpg",
+    "05.jpg",
+    "06.jpg"
+  ],
+  "caption": "Deze week liepen plannen, voorstellen en uitvoering naast elkaar. In Nederland is de toegezegde hoeveelheid olieproducten vrijgegeven; over het Belastingplan 2027 is nog geen akkoord. In Europa presenteerde de Commissie een voorstel voor een klimaatweerbaarheidswet en bepaalde het Parlement zijn positie over de begroting voor 2027 en Erasmus+. Over die Europese voorstellen en bedragen moet nog verder worden onderhandeld of besloten.\n\nVolledig overzicht en bronnen via de link in bio.",
+  "content": {
+    "intro": "Belastingplan, olievoorraden, klimaatweerbaarheid en EU-begroting.",
+    "caption": "Deze week liepen plannen, voorstellen en uitvoering naast elkaar. In Nederland is de toegezegde hoeveelheid olieproducten vrijgegeven; over het Belastingplan 2027 is nog geen akkoord. In Europa presenteerde de Commissie een voorstel voor een klimaatweerbaarheidswet en bepaalde het Parlement zijn positie over de begroting voor 2027 en Erasmus+. Over die Europese voorstellen en bedragen moet nog verder worden onderhandeld of besloten.\n\nVolledig overzicht en bronnen via de link in bio.",
+    "cards": [
+      {
+        "headline": "Belastingplan 2027: gesprekken lopen nog",
+        "body": "Het kabinet zoekt oppositiesteun voor aanpassingen aan het Belastingplan 2027, met als doel de koopkracht verder te verbeteren. Ook het voorstel voor box 3 is nog in bewerking. De inhoud en uitkomst van de gesprekken zijn niet definitief.",
+        "status": "Nog geen akkoord",
+        "footer": "Het debat staat op 4 november op de agenda. Het plan heeft steun nodig in zowel de Tweede als de Eerste Kamer."
+      },
+      {
+        "headline": "Nederland voltooit toegezegde vrijgave van olieproducten",
+        "body": "Nederland heeft in totaal 5,36 miljoen vaten olieproducten vrijgegeven, ongeveer 16 procent van de strategische voorraad. De laatste tranche, ongeveer 700.000 vaten, kwam op 29 oktober op de markt als onderdeel van een gezamenlijke actie van 31 IEA-landen.",
+        "status": "Toegezegde vrijgave voltooid",
+        "footer": "COVA brengt de producten gefaseerd op de markt. Het effect op de olieprijzen is niet gegarandeerd."
+      },
+      {
+        "headline": "Commissie stelt wet voor klimaatweerbaarheid voor",
+        "body": "De Europese Commissie wil met een klimaatweerbaarheidswet overheden, bedrijven en gemeenschappen helpen klimaatrisico’s gezamenlijk in kaart te brengen en erop te reageren. Het gaat om een voorstel, niet om een al geldende EU-verplichting.",
+        "status": "Commissievoorstel",
+        "footer": "Het Europees Parlement en de Raad moeten het voorstel behandelen voordat het eventueel wet wordt."
+      },
+      {
+        "headline": "Europees Parlement wil meer ruimte voor budget en Erasmus+",
+        "body": "Voor de EU-begroting 2027 stelde het Parlement €1,17 miljard aan gerichte verhogingen voor. Voor Erasmus+ in 2028–2034 wil het circa €47,4 miljard, tegenover €40,8 miljard in het Commissievoorstel. Dit zijn parlementaire posities, geen definitieve bedragen.",
+        "status": "Akkoord nog open",
+        "footer": "De begrotingsbemiddeling loopt; over Erasmus+ volgen onderhandelingen met de Raad."
+      }
+    ]
+  }
+}
