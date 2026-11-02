@@ -11,6 +11,10 @@ on:
         description: "Editie-ID (zondag YYYY-MM-DD); leeg = nieuwste editie"
         type: string
         required: false
+      source_run:
+        description: "Run-ID van eerder gemaakte kaarten (optioneel)"
+        type: string
+        required: false
       publish:
         description: "Publiceer op Instagram (uit = alleen proefbestanden)"
         type: boolean
@@ -69,6 +73,16 @@ jobs:
           PY
       - name: Controleer scripts
         run: python -m unittest discover -s tests -p 'test_instagram*.py'
+      - name: Haal eerder gemaakte kaarten op
+        if: inputs.source_run != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ inputs.source_run }}
+          EDITION: ${{ steps.editie.outputs.edition }}
+        run: |
+          [[ "$SOURCE_RUN" =~ ^[0-9]+$ ]] || exit 1
+          mkdir -p "assets/instagram/$EDITION"
+          gh run download "$SOURCE_RUN" --name "instagram-$EDITION" --dir "assets/instagram/$EDITION"
       - name: Maak teksten en kaarten
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
