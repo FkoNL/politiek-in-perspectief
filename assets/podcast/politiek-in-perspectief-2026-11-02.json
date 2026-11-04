@@ -1,0 +1,123 @@
+{
+  "title": "Politiek in Perspectief — 2 november 2026",
+  "status": "klaar",
+  "publication_date": "2026-11-02",
+  "period": "26 oktober 2026–1 november 2026",
+  "ai_voice": true,
+  "disclosure": "Deze aflevering is ingesproken met een AI-stem, op basis van menselijke instructies.",
+  "voice": "marin",
+  "model": "gpt-4o-mini-tts",
+  "duration_seconds": 632.346122,
+  "raw_duration_seconds": 632.3,
+  "tempo_adjustment": 1,
+  "narration_speed": 1,
+  "narration_instructions": "Spreek rustig, helder en warm Nederlands. Houd het tempo bedachtzaam en journalistiek, zonder opgewekte reclamesfeer.",
+  "word_count": 1294,
+  "source_edition": "edities/2026-11-01.html",
+  "source_blob_sha": "3054b4a3bf52c3169a4813fb01406b4622c3a30b",
+  "generated_at": "2026-11-02T09:17:11.874Z",
+  "chapters": [
+    {
+      "title": "Opening",
+      "start_seconds": 0
+    },
+    {
+      "title": "Een eenvoudiger rijksoverheid",
+      "start_seconds": 39.5
+    },
+    {
+      "title": "Belastingplan nog in onderhandeling",
+      "start_seconds": 101.35
+    },
+    {
+      "title": "Samenwerking rond jonge kinderen",
+      "start_seconds": 150.15
+    },
+    {
+      "title": "Nieuwe regels voor toeristische verhuur",
+      "start_seconds": 211.8
+    },
+    {
+      "title": "Voorstel voor een maximum aan uitzendwerk",
+      "start_seconds": 267.7
+    },
+    {
+      "title": "Toegezegde olie vrijgegeven",
+      "start_seconds": 319.3
+    },
+    {
+      "title": "Meerjarige niet-militaire steun aan Oekraïne",
+      "start_seconds": 370.85
+    },
+    {
+      "title": "Europese wet voor klimaatweerbaarheid voorgesteld",
+      "start_seconds": 425.45
+    },
+    {
+      "title": "Europese begroting en Erasmus+",
+      "start_seconds": 481.65
+    },
+    {
+      "title": "EU en Canada zoeken nauwere samenwerking",
+      "start_seconds": 537.75
+    },
+    {
+      "title": "Vooruitblik en afsluiting",
+      "start_seconds": 592.65
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/10/26/kabinet-werkt-aan-slagvaardige-overheid-eenvoudiger-slimmer-en-kleiner",
+      "title": "Rijksoverheid — Kabinet werkt aan slagvaardige overheid"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/documenten/2026/10/30/letterlijke-tekst-persconferentie-na-ministerraad-30-oktober-2026",
+      "title": "Rijksoverheid — Persconferentie na ministerraad 30 oktober"
+    },
+    {
+      "url": "https://www.tweedekamer.nl/debat_en_vergadering/plenaire_vergaderingen?fromdate=04%2F11%2F2026&todate=04%2F11%2F2026",
+      "title": "Tweede Kamer — Plenaire agenda 4 november 2026"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/10/30/kabinet-wil-vliegende-start-voor-jonge-kinderen",
+      "title": "Rijksoverheid — Kabinet wil vliegende start voor jonge kinderen"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/10/29/nieuwe-regels-voor-toeristische-verhuur-vanaf-1-november-2026",
+      "title": "Rijksoverheid — Nieuwe regels voor toeristische verhuur vanaf 1 november 2026"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/10/29/inzet-uitzendkrachten-wordt-begrensd-in-tijd",
+      "title": "Rijksoverheid — Inzet uitzendkrachten wordt begrensd in tijd"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/10/29/nederland-voldoet-aan-iea-actie-vrijgave-deel-olievoorraad",
+      "title": "Rijksoverheid — Nederland voldoet aan IEA-actie vrijgave deel olievoorraad"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/10/28/sjoerdsma-kondigt-op-bezoek-in-kyiv-nieuw-steunpakket-aan",
+      "title": "Rijksoverheid — Sjoerdsma kondigt op bezoek in Kyiv nieuw steunpakket aan"
+    },
+    {
+      "url": "https://commission.europa.eu/news-and-media/news/protecting-europe-stronger-climate-resilience-2026-10-27_en",
+      "title": "Europese Commissie — Protecting Europe with stronger climate-resilience"
+    },
+    {
+      "url": "https://eprs.europarl.europa.eu/home/topics/budgetary-affairs/BUDGET/eu-budget-2027.html",
+      "title": "EPRS — The European Union’s budget for 2027"
+    },
+    {
+      "url": "https://oeil.europarl.europa.eu/oeil/en/document-summary?id=1920905",
+      "title": "Europees Parlement — Erasmus+ 2028–2034, aangenomen tekst en stemming"
+    },
+    {
+      "url": "https://oeil.europarl.europa.eu/oeil/en/procedure-file?reference=2025%2F0222%28COD%29",
+      "title": "Europees Parlement — Procedure Erasmus+ 2028–2034"
+    },
+    {
+      "url": "https://commission.europa.eu/topics/foreign-affairs-and-security-policy/eu-canada-relations_en",
+      "title": "Europese Commissie — EU-Canada relations en top van 2026"
+    }
+  ]
+}
