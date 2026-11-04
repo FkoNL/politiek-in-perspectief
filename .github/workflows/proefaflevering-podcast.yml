@@ -97,9 +97,6 @@ jobs:
           PODCAST_BRANCH: ${{ steps.editie.outputs.branch }}
           REGENERATE_AUDIO: ${{ inputs.regenerate }}
         run: node scripts/generate-podcast-trial.mjs
-      - name: Werk de openbare podcastfeed bij
-        if: steps.editie.outputs.exists != 'true'
-        run: node scripts/generate-podcast-feed.mjs
       - name: Bewaar afgeronde tekst en audiofragmenten
         if: always() && steps.editie.outputs.exists != 'true'
         uses: actions/cache/save@v4
