@@ -125,6 +125,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      pages: write
+      id-token: write
     uses: ./.github/workflows/proefaflevering-podcast.yml
     with:
       edition_date: ${{ needs.maak-editie.outputs.date }}
