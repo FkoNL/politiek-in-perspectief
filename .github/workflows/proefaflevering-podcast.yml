@@ -35,6 +35,8 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: wekelijkse-podcast
@@ -44,6 +46,8 @@ jobs:
   podcast:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    outputs:
+      commit: ${{ steps.publiceer.outputs.commit }}
     steps:
       - name: Haal de gepubliceerde editie op
         uses: actions/checkout@v4
@@ -113,21 +117,37 @@ jobs:
             ${{ steps.audio.outputs.metadata }}
           if-no-files-found: error
           retention-days: 30
-      - name: Zet de aflevering klaar voor beoordeling
+      - name: Publiceer aflevering en feed
+        id: publiceer
         if: steps.editie.outputs.exists != 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
           EDITION_DATE: ${{ steps.editie.outputs.date }}
-          BRANCH: ${{ steps.editie.outputs.branch }}
           MP3_FILE: ${{ steps.audio.outputs.mp3 }}
           SCRIPT_FILE: ${{ steps.audio.outputs.transcript }}
           META_FILE: ${{ steps.audio.outputs.metadata }}
+          SOURCE_SHA: ${{ steps.editie.outputs.source_sha }}
         run: |
-          git checkout -b "$BRANCH"
           git config user.name "politiek-in-perspectief[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "podcast.xml" "podcast/scripts/${EDITION_DATE}.json" "$MP3_FILE" "$SCRIPT_FILE" "$META_FILE"
-          git commit -m "Maak podcastaflevering ${EDITION_DATE} met rustige vertelstem"
-          git push origin "$BRANCH"
-          url=$(gh pr create --draft --base main --head "$BRANCH" --title "Podcastaflevering ${EDITION_DATE} — rustige vertelstem" --body-file "$RUNNER_TEMP/podcast-aflevering-pr.md")
-          echo "Aflevering klaar: $url" >> "$GITHUB_STEP_SUMMARY"
+          git add "podcast/scripts/${EDITION_DATE}.json" "$MP3_FILE" "$SCRIPT_FILE" "$META_FILE"
+          git commit -m "Publiceer podcastaflevering ${EDITION_DATE}"
+          git fetch origin main
+          git rebase origin/main
+          SOURCE_FILE=$(node --input-type=module -e 'import {publicationPeriod} from "./scripts/generate-podcast-script.mjs"; console.log(publicationPeriod(process.env.EDITION_DATE).edition)')
+          test "$(git hash-object "$SOURCE_FILE")" = "$SOURCE_SHA" || { echo "Broneditie gewijzigd; podcast niet gepubliceerd"; exit 1; }
+          node scripts/generate-podcast-feed.mjs
+          git add podcast.xml
+          git commit --amend --no-edit
+          git push origin HEAD:main
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  publiceer-feed:
+    needs: podcast
+    if: needs.podcast.outputs.commit != ''
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-pages.yml
+    with:
+      ref: ${{ needs.podcast.outputs.commit }}
