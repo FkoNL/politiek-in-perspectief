@@ -15,6 +15,16 @@
     <itunes:category text="News"><itunes:category text="Politics" /></itunes:category>
     <itunes:image href="https://politiekinperspectief.nl/assets/podcast/cover-1400.jpg" />
     <item>
+      <title>Politiek in Perspectief — 9 november 2026</title>
+      <guid isPermaLink="false">politiek-in-perspectief-2026-11-09</guid>
+      <pubDate>Mon, 09 Nov 2026 06:00:00 GMT</pubDate>
+      <description><![CDATA[Een rustige, journalistieke terugblik op de Nederlandse en Europese politiek van 2 november 2026–8 november 2026.]]></description>
+      <enclosure url="https://politiekinperspectief.nl/assets/podcast/politiek-in-perspectief-2026-11-09.mp3" length="10320486" type="audio/mpeg" />
+      <itunes:duration>00:10:45</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <explicit>false</explicit>
+    </item>
+    <item>
       <title>Politiek in Perspectief — 2 november 2026</title>
       <guid isPermaLink="false">politiek-in-perspectief-2026-11-02</guid>
       <pubDate>Mon, 02 Nov 2026 06:00:00 GMT</pubDate>

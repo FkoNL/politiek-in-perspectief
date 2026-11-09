@@ -1,0 +1,87 @@
+{
+  "title": "Politiek in Perspectief — 9 november 2026",
+  "status": "klaar",
+  "publication_date": "2026-11-09",
+  "period": "2 november 2026–8 november 2026",
+  "ai_voice": true,
+  "disclosure": "Deze aflevering is ingesproken met een AI-stem, op basis van menselijke instructies.",
+  "voice": "marin",
+  "model": "gpt-4o-mini-tts",
+  "duration_seconds": 644.989388,
+  "raw_duration_seconds": 644.95,
+  "tempo_adjustment": 1,
+  "narration_speed": 1,
+  "narration_instructions": "Spreek rustig, helder en warm Nederlands. Houd het tempo bedachtzaam en journalistiek, zonder opgewekte reclamesfeer.",
+  "word_count": 1275,
+  "source_edition": "edities/2026-11-08.html",
+  "source_blob_sha": "0f4242eac1eae2d486dd5ab5bd58e634f0b5f48f",
+  "generated_at": "2026-11-09T11:28:14.023Z",
+  "chapters": [
+    {
+      "title": "Opening",
+      "start_seconds": 0
+    },
+    {
+      "title": "Steun voor energie-intensieve industrie",
+      "start_seconds": 43.15
+    },
+    {
+      "title": "Boetes voor arbeidsmisstanden omhoog",
+      "start_seconds": 123.9
+    },
+    {
+      "title": "Een kabinetsvisie op kunstmatige intelligentie",
+      "start_seconds": 202.9
+    },
+    {
+      "title": "Overleg over energie en klimaat",
+      "start_seconds": 289.55
+    },
+    {
+      "title": "Batterijopslag op Aruba en Curaçao",
+      "start_seconds": 360.25
+    },
+    {
+      "title": "Europa bereidt zich gezamenlijk voor op crises",
+      "start_seconds": 431.65
+    },
+    {
+      "title": "Samenwerking met de Westelijke Balkan",
+      "start_seconds": 511.7
+    },
+    {
+      "title": "Vooruitblik en afsluiting",
+      "start_seconds": 591.3
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/03/kabinet-helpt-industrie-met-hoge-elektriciteitskosten",
+      "title": "Rijksoverheid — Kabinet helpt industrie met hoge elektriciteitskosten"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/07/kabinet-pakt-arbeidsmisstanden-aan-met-hogere-boetes",
+      "title": "Rijksoverheid — Kabinet pakt arbeidsmisstanden aan met hogere boetes"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/06/kabinet-kiest-voor-ai-die-nederland-vooruithelpt",
+      "title": "Rijksoverheid — Kabinet kiest voor AI die Nederland vooruithelpt"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/04/kabinet-en-maatschappelijke-partijen-in-gesprek-over-de-klimaat-en-energieopgave",
+      "title": "Rijksoverheid — Kabinet en maatschappelijke partijen in gesprek over de klimaat- en energieopgave"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/06/50-miljoen-voor-batterijparken-en-stroomnet-op-aruba-en-curacao",
+      "title": "Rijksoverheid — €50 miljoen voor batterijparken en stroomnet op Aruba en Curaçao"
+    },
+    {
+      "url": "https://eprs.europarl.europa.eu/EPRS_ATA(2026)797016?locale=EN",
+      "title": "EPRS — Union Civil Protection Mechanism, 2028–2034"
+    },
+    {
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/05/joint-press-release-eu-western-balkans-ministerial-forum-on-justice-and-home-affairs-budva-montenegro-5-6-november-2026/",
+      "title": "Raad van de EU — EU-Westelijke Balkan Forum Justitie en Binnenlandse Zaken"
+    }
+  ]
+}
