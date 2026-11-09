@@ -40,7 +40,6 @@ export function renderStory(story, index) {
   const why = separateCitations(story.why);
   const next = separateCitations(story.next);
   const watch = separateCitations(story.watch);
-  const expanded = Boolean(next.text || watch.text);
   const sources = new Map();
   for (const value of [...(story.sources ?? []), ...body.sources, ...why.sources, ...next.sources, ...watch.sources]) {
     const source = sourceLink(value);
@@ -53,10 +52,7 @@ export function renderStory(story, index) {
   return `<article class="news-item" id="${storyId(story, index)}">
         <p class="news-meta">${String(index + 1).padStart(2, "0")} · ${escape(story.kicker)}</p>
         <h3>${escape(story.headline)}</h3>
-        <div class="story-body">${expanded ? "<h4>Wat is er gebeurd?</h4>" : ""}${paragraphs(body.text, "news-copy")}</div>
-        <div class="question"><h4>Waarom dit telt</h4>${paragraphs(why.text)}</div>
-        ${next.text ? `<div class="story-follow-up"><h4>Wat volgt?</h4>${paragraphs(next.text)}</div>` : ""}
-        ${watch.text ? `<div class="story-follow-up"><h4>Om te volgen</h4>${paragraphs(watch.text)}</div>` : ""}
+        <div class="story-body">${[body, why, next, watch].map(({ text }) => paragraphs(text, "news-copy")).filter(Boolean).join("\n")}</div>
         ${sourceHtml}
       </article>`;
 }
