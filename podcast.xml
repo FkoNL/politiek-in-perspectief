@@ -10,6 +10,10 @@
     <itunes:subtitle>Wekelijkse politieke duiding</itunes:subtitle>
     <itunes:summary><![CDATA[Wekelijkse, rustige duiding bij Nederlandse en Europese politiek.]]></itunes:summary>
     <itunes:author>Politiek in Perspectief</itunes:author>
+    <itunes:owner>
+      <itunes:name>Politiek in Perspectief</itunes:name>
+      <itunes:email>feikoo@gmail.com</itunes:email>
+    </itunes:owner>
     <itunes:explicit>false</itunes:explicit>
     <itunes:type>episodic</itunes:type>
     <itunes:category text="News"><itunes:category text="Politics" /></itunes:category>
