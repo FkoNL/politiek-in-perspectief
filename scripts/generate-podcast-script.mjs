@@ -136,7 +136,7 @@ export async function generatePodcastScript() {
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        model: "gpt-6-luna", reasoning: { effort: "low" }, max_output_tokens: 4096,
+        model: "gpt-6.1-sol", reasoning: { effort: "medium" }, max_output_tokens: 4096,
         text: { format: { type: "json_schema", name: "podcast_script", strict: true, schema } },
         input: [
           { role: "developer", content: prompt },
