@@ -1,0 +1,43 @@
+{
+  "edition": "2026-11-08",
+  "source_sha256": "667e121d789ce692c612790e4e78fe024dc78d2186f02c6dbfd9106a080be5e9",
+  "images": [
+    "01.jpg",
+    "02.jpg",
+    "03.jpg",
+    "04.jpg",
+    "05.jpg",
+    "06.jpg"
+  ],
+  "caption": "Deze week stonden in Nederland steun voor energie-intensieve bedrijven en investeringen in batterijopslag centraal. In Europa zette het Parlement een positie neer over civiele bescherming; daarnaast spraken de EU en de Westelijke Balkan over samenwerking tegen grensoverschrijdende misdaad. Bij meerdere onderwerpen moeten uitvoering of verdere onderhandelingen nog volgen.\n\nVolledig overzicht en bronnen via de link in bio.",
+  "content": {
+    "intro": "Industriële steun, batterijopslag, Europese crisisvoorbereiding en samenwerking tegen misdaad.",
+    "caption": "Deze week stonden in Nederland steun voor energie-intensieve bedrijven en investeringen in batterijopslag centraal. In Europa zette het Parlement een positie neer over civiele bescherming; daarnaast spraken de EU en de Westelijke Balkan over samenwerking tegen grensoverschrijdende misdaad. Bij meerdere onderwerpen moeten uitvoering of verdere onderhandelingen nog volgen.\n\nVolledig overzicht en bronnen via de link in bio.",
+    "cards": [
+      {
+        "headline": "Steun voor industrie naar voren, met vergroening als voorwaarde",
+        "body": "Voor 2027 komt €150 miljoen beschikbaar voor de elektriciteitskosten van de industrie. Bedrijven moeten minstens de helft van de steun investeren in verduurzaming. De regeling voor 2027 wordt nog uitgewerkt via het Europese CISAF-kader.",
+        "status": "Regeling nog in uitwerking",
+        "footer": "Het kabinet werkt de regeling voor 2027 uit en besluit komend voorjaar over de besteding vanaf 2028."
+      },
+      {
+        "headline": "Batterijsteun voor Aruba en Curaçao",
+        "body": "Nederland trekt circa €50 miljoen uit voor batterijopslag en versterking van de stroomnetten. Curaçao krijgt €23 miljoen; voor Aruba is €26 miljoen steun aangekondigd. De genoemde opslagcapaciteit betekent nog niet dat de leveringszekerheid al is gerealiseerd.",
+        "status": "Investeringen aangekondigd",
+        "footer": "De batterijdeal voor Curaçao is ondertekend; voor de projecten zijn geen volledige planning of opleverdata vermeld."
+      },
+      {
+        "headline": "Europees Parlement zet stap richting nieuwe crisisregeling",
+        "body": "Het Europees Parlement stemde over zijn positie voor het voorgestelde UCPM+, een vernieuwd EU-mechanisme voor civiele bescherming en voorbereiding op gezondheidscrises. Er is nog geen definitieve regeling of begroting vastgesteld.",
+        "status": "Parlementaire positie",
+        "footer": "Onderhandelingen met de Raad zijn voorzien. De uitkomst hangt ook samen met de meerjarenbegroting voor 2028–2034."
+      },
+      {
+        "headline": "EU en Westelijke Balkan willen samenwerking voortzetten",
+        "body": "Op een forum in Montenegro bespraken EU-vertegenwoordigers en ministers uit de Westelijke Balkan onder meer online fraude, cyberaanvallen, migratie, asiel en grensbeheer. De gezamenlijke verklaring noemt werkterreinen, maar is geen nieuw bindend besluit.",
+        "status": "Gezamenlijke verklaring",
+        "footer": "De partijen spraken af gezamenlijke inspanningen voort te zetten; het forum kondigde geen concrete tijdlijn of nieuw wettelijk besluit aan."
+      }
+    ]
+  }
+}
