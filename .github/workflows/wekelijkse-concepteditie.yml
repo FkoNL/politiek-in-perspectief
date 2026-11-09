@@ -2,10 +2,11 @@ name: Maak en publiceer wekelijkse editie
 
 on:
   schedule:
-    # GitHub Actions gebruikt UTC. Beide mogelijke UTC-uren worden gepland;
-    # de eerste stap laat alleen 06:00 en 06:20 Nederlandse tijd door.
-    - cron: "0 5,6 * * 1"
-    - cron: "20 5,6 * * 1"
+    # GitHub Actions gebruikt UTC. Buiten het drukke hele uur plannen.
+    # 06:13 en 06:43 Nederlandse tijd; het tijdvenster filtert de
+    # overige UTC-uitvoeringen en dubbele edities worden voorkomen.
+    - cron: "13 5,6 * * 1"
+    - cron: "43 5,6 * * 1"
   workflow_dispatch:
     inputs:
       edition_date:
