@@ -1,6 +1,10 @@
 name: Maak en publiceer wekelijkse editie
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/edition-trigger.txt'
   schedule:
     # GitHub Actions gebruikt UTC. Buiten het drukke hele uur plannen.
     # 06:13 en 06:43 Nederlandse tijd; het tijdvenster filtert de
