@@ -1,10 +1,6 @@
 name: Deploy GitHub Pages
 
 on:
-  workflow_run:
-    workflows: [Maak en publiceer wekelijkse editie]
-    types: [completed]
-    branches: [main]
   push:
     branches: [main]
   workflow_dispatch:
