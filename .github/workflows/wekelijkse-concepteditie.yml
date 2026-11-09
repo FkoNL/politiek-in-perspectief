@@ -6,11 +6,11 @@ on:
     paths:
       - '.github/edition-trigger.txt'
   schedule:
-    # GitHub Actions gebruikt UTC. Buiten het drukke hele uur plannen.
-    # 06:13 en 06:43 Nederlandse tijd; het tijdvenster filtert de
-    # overige UTC-uitvoeringen en dubbele edities worden voorkomen.
-    - cron: "13 5,6 * * 1"
-    - cron: "43 5,6 * * 1"
+    # GitHub Actions gebruikt UTC. 23:15 UTC op zondag is 01:15 CEST;
+    # 00:15 UTC op maandag is 01:15 CET. Het tijdvenster filtert de
+    # andere UTC-uitvoering; een kleine vertraging blijft toegestaan.
+    - cron: "15 23 * * 0"
+    - cron: "15 0 * * 1"
   workflow_dispatch:
     inputs:
       edition_date:
@@ -50,12 +50,16 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import { appendFile } from "node:fs/promises";
-          const local = new Intl.DateTimeFormat("sv-SE", {
-            timeZone: "Europe/Amsterdam", hour: "2-digit", hourCycle: "h23"
-          }).formatToParts(new Date()).find((part) => part.type === "hour").value;
-          const proceed = process.env.EVENT_NAME !== "schedule" || local === "06";
+          const parts = new Intl.DateTimeFormat("sv-SE", {
+            timeZone: "Europe/Amsterdam",
+            weekday: "short",
+            hour: "2-digit",
+            hourCycle: "h23"
+          }).formatToParts(new Date());
+          const value = (type) => parts.find((part) => part.type === type).value;
+          const proceed = process.env.EVENT_NAME !== "schedule" || (value("weekday") === "mån" && value("hour") === "01");
           await appendFile(process.env.GITHUB_OUTPUT, `proceed=${proceed}\n`);
-          await appendFile(process.env.GITHUB_STEP_SUMMARY, proceed ? "Uitvoering binnen het Nederlandse tijdvenster.\n" : "Reserve-UTC-tijdstip buiten 06:00 Nederlandse tijd; veilig overgeslagen.\n");
+          await appendFile(process.env.GITHUB_STEP_SUMMARY, proceed ? "Uitvoering binnen het Nederlandse tijdvenster.\n" : "Reserve-UTC-tijdstip buiten maandag 01:00 Nederlandse tijd; veilig overgeslagen.\n");
           NODE
       - name: Haal de site op
         if: steps.tijdvenster.outputs.proceed == 'true'
