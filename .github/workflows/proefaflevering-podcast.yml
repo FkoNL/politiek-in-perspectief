@@ -46,8 +46,6 @@ jobs:
   podcast:
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    outputs:
-      commit: ${{ steps.publiceer.outputs.commit }}
     steps:
       - name: Haal de gepubliceerde editie op
         uses: actions/checkout@v4
@@ -136,15 +134,4 @@ jobs:
           git add podcast.xml
           git commit --amend --no-edit
           git push origin HEAD:main
-          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-  publiceer-feed:
-    needs: podcast
-    if: needs.podcast.outputs.commit != ''
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    uses: ./.github/workflows/deploy-pages.yml
-    with:
-      ref: ${{ needs.podcast.outputs.commit }}
