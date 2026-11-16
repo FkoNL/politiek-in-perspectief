@@ -1,0 +1,43 @@
+{
+  "edition": "2026-11-15",
+  "source_sha256": "77ed73ba42e8e92aa1d192ba75ec1fe8145d382be7347490f2e5b8aaaf7e538a",
+  "images": [
+    "01.jpg",
+    "02.jpg",
+    "03.jpg",
+    "04.jpg",
+    "05.jpg",
+    "06.jpg"
+  ],
+  "caption": "Deze week bracht besluiten en voorstellen dichterbij, maar de vervolgstappen blijven belangrijk. Het Belastingplan gaat nog naar de Eerste Kamer; infrastructuurafspraken vragen verdere planuitwerking. Het EU-begrotingsakkoord moet formeel worden goedgekeurd en de voorstellen voor digitale consumentenbescherming moeten nog door Parlement en Raad worden behandeld.\n\nVolledig overzicht en bronnen via de link in bio.",
+  "content": {
+    "intro": "Belastingplan, infrastructuur, EU-begroting en digitale consumentenbescherming.",
+    "caption": "Deze week bracht besluiten en voorstellen dichterbij, maar de vervolgstappen blijven belangrijk. Het Belastingplan gaat nog naar de Eerste Kamer; infrastructuurafspraken vragen verdere planuitwerking. Het EU-begrotingsakkoord moet formeel worden goedgekeurd en de voorstellen voor digitale consumentenbescherming moeten nog door Parlement en Raad worden behandeld.\n\nVolledig overzicht en bronnen via de link in bio.",
+    "cards": [
+      {
+        "headline": "Belastingplan aangenomen, coalitie verdeeld",
+        "body": "De Tweede Kamer nam het Belastingplan 2027 aan. Een amendement verlaagt de eerste twee belastingtarieven met 0,14 procentpunt en draait de geplande verlaging van de ouderenkorting terug. VVD stemde tegen; premier Jetten kondigde gesprekken tussen de coalitiepartijen aan.",
+        "status": "Aangenomen door de Tweede Kamer",
+        "footer": "Het plan gaat naar de Eerste Kamer. De coalitiegesprekken hadden op 13 november nog geen uitkomst."
+      },
+      {
+        "headline": "Rijk en regio werken infrastructuurplannen uit",
+        "body": "Voor de Merwedelijn is gekozen voor een snelle, frequente tram met verdiepte ligging. Ook zijn twee stations aan de Oude Lijn afgesproken. De verdeling van 355 miljoen euro voor bereikbaarheid van vier woningbouwlocaties is uitgewerkt; de bijdrage ondersteunt ontwikkelruimte voor ongeveer 29.000 woningen.",
+        "status": "Afspraken; planuitwerking volgt",
+        "footer": "De Merwedelijn vraagt naar verwachting ongeveer vier jaar planuitwerking. De genoemde woningen zijn niet opgeleverd."
+      },
+      {
+        "headline": "Voorlopig akkoord over EU-begroting 2027",
+        "body": "Onderhandelaars van Raad en Europees Parlement kwamen uit op 199,7 miljard euro aan vastleggingen en 211,5 miljard aan betalingen. Het akkoord herstelt voorgestelde bezuinigingen en voegt 300 miljoen euro toe, onder meer voor onderzoek, onderwijs en crisisbestrijding.",
+        "status": "Voorlopig akkoord",
+        "footer": "Raad en Parlement moeten het akkoord nog formeel goedkeuren; de Raad verwacht dat op 23 november te doen."
+      },
+      {
+        "headline": "EU-Commissie wil onlineverkoop eerlijker maken",
+        "body": "Voorstellen richten zich onder meer op misleidende schaarsteclaims, ondoorzichtige prijzen en ongewenste abonnementsverlengingen. De Commissie wil bij grootschalige consumentenzaken zelf onderzoek kunnen doen en boetes opleggen tot 6 procent van de wereldwijde jaaromzet.",
+        "status": "Voorstellen van de Commissie",
+        "footer": "Europees Parlement en Raad behandelen de voorstellen nog. Er is nog geen definitieve wet of ingangsdatum."
+      }
+    ]
+  }
+}
