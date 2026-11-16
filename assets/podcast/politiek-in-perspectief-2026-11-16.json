@@ -1,0 +1,131 @@
+{
+  "title": "Politiek in Perspectief — 16 november 2026",
+  "status": "klaar",
+  "publication_date": "2026-11-16",
+  "period": "9 november 2026–15 november 2026",
+  "ai_voice": true,
+  "disclosure": "Deze aflevering is ingesproken met een AI-stem, op basis van menselijke instructies.",
+  "voice": "marin",
+  "model": "gpt-4o-mini-tts",
+  "duration_seconds": 593.737143,
+  "raw_duration_seconds": 593.7,
+  "tempo_adjustment": 1,
+  "narration_speed": 1,
+  "narration_instructions": "Spreek rustig, helder en warm Nederlands. Houd het tempo bedachtzaam en journalistiek, zonder opgewekte reclamesfeer.",
+  "word_count": 1184,
+  "source_edition": "edities/2026-11-15.html",
+  "source_blob_sha": "a3e3ca1de7b06f08e0a3056d6464dbf72cb9c610",
+  "generated_at": "2026-11-16T08:40:35.554Z",
+  "chapters": [
+    {
+      "title": "Opening",
+      "start_seconds": 0
+    },
+    {
+      "title": "Belastingplan verdeelt de coalitie",
+      "start_seconds": 39.25
+    },
+    {
+      "title": "Bereikbaarheid als voorwaarde voor woningbouw",
+      "start_seconds": 115
+    },
+    {
+      "title": "Financiële grenzen voor woningcorporaties",
+      "start_seconds": 188.75
+    },
+    {
+      "title": "Voorgestelde helmplicht voor jongeren",
+      "start_seconds": 263.2
+    },
+    {
+      "title": "Voorlopig akkoord over de Europese begroting",
+      "start_seconds": 324.25
+    },
+    {
+      "title": "Voorstellen tegen misleidende onlineverkoop",
+      "start_seconds": 402.1
+    },
+    {
+      "title": "Winterhulp voor Oekraïne",
+      "start_seconds": 473.55
+    },
+    {
+      "title": "Vooruitblik en afsluiting",
+      "start_seconds": 540.05
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.eerstekamer.nl/behandeling/20261112/stemmingsoverzicht_tweede_kamer_4",
+      "title": "Eerste Kamer — stemmingsoverzicht Belastingplan 2027"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/documenten/2026/11/13/letterlijke-tekst-persconferentie-na-ministerraad-13-november-2026",
+      "title": "Rijksoverheid — persconferentie ministerraad 13 november"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/11/kabinet-en-regio-geven-verdere-invulling-aan-prioritering",
+      "title": "Rijksoverheid — afspraken kabinet en regio over infrastructuur"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/13/commissie-onderzoekt-verbetering-financien-woningcorporaties",
+      "title": "Rijksoverheid — onderzoek financiën woningcorporaties"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/07/08/kabinet-gaat-woningcorporaties-meer-ruimte-geven-voor-bouw-middenhuurwoningen",
+      "title": "Rijksoverheid — financieringsplan corporaties van 8 juli"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/13/helmplicht-voor-jongeren-op-fatbikes-en-andere-e-bikes-gaat-naar-tweede-kamer",
+      "title": "Rijksoverheid — helmplicht jongeren naar parlement"
+    },
+    {
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/11/eu-budget-for-2027-council-and-parliament-reach-agreement/",
+      "title": "Raad van de EU — begrotingsakkoord 2027"
+    },
+    {
+      "url": "https://cna.org.cy/en/press_releases/article/11182960/press-release-european-parliament",
+      "title": "EP-persdienst via CNA — aanvullingen en vervolgstappen"
+    },
+    {
+      "url": "https://ec.europa.eu/commission/presscorner/api/files/document/print/en/ip_26_2407/IP_26_2407_EN.pdf",
+      "title": "Europese Commissie — voorstellen digitale consumentenbescherming"
+    },
+    {
+      "url": "https://oeil.europarl.europa.eu/oeil/en/procedure-file?reference=2025%2F0223%28COD%29",
+      "title": "Europees Parlement — procedure en besluit van 12 november"
+    },
+    {
+      "url": "https://eprs.europarl.europa.eu/EPRS_ATA(2026)797016",
+      "title": "EPRS — achtergrond crisismechanisme 2028–2034, 5 november"
+    },
+    {
+      "url": "https://eprs.europarl.europa.eu/EPRS_ATA(2026)797036",
+      "title": "EPRS — plenaire terugblik november I"
+    },
+    {
+      "url": "https://oeil.europarl.europa.eu/oeil/es/procedure-file?reference=2025%2F2139%28INI%29",
+      "title": "Europees Parlement — procedure kankerplan"
+    },
+    {
+      "url": "https://2eu.brussels/index.php/en/news/european-parliament-calls-for-at-least-2-5-billion-for-cancer-action-in-the-20282034-eu-budget",
+      "title": "2EU — aangenomen resolutie en financieringswensen"
+    },
+    {
+      "url": "https://www.consilium.europa.eu/de/press/press-releases/2026/11/13/remarks-by-president-antonio-costa-at-the-press-conference-following-the-informal-meeting-of-heads-of-state-or-government-of-13-november-2026/",
+      "title": "Europese Raad — persverklaring Costa na AI-overleg"
+    },
+    {
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/12/joint-statement-by-president-costa-and-president-von-der-leyen-following-their-meeting-with-president-zelenskyy-in-dublin/",
+      "title": "Europese Raad en Commissie — verklaring na ontmoeting Zelensky"
+    },
+    {
+      "url": "https://data.consilium.europa.eu/doc/document/ST-15670-2026-INIT/en/pdf",
+      "title": "Raad van de EU — verslag bijdragen aan EP-debatten"
+    },
+    {
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/13/media-advisory-foreign-affairs-council-of-16-november-2026/pdf/",
+      "title": "Raad van de EU — agenda Buitenlandse Zaken 16 november"
+    }
+  ]
+}
