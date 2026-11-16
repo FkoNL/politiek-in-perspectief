@@ -6,9 +6,9 @@ on:
     paths:
       - '.github/edition-trigger.txt'
   schedule:
-    # GitHub Actions gebruikt UTC. 23:15 UTC op zondag is 01:15 CEST;
-    # 00:15 UTC op maandag is 01:15 CET. Het tijdvenster filtert de
-    # andere UTC-uitvoering; een kleine vertraging blijft toegestaan.
+    # Twee UTC-momenten vangen zomer- en wintertijd op. Beide kunnen
+    # uitvoeren; de bestaande-editiecontrole voorkomt dubbel genereren.
+    # Vertraagde GitHub-runs worden niet meer op tijdstip afgewezen.
     - cron: "15 23 * * 0"
     - cron: "15 0 * * 1"
   workflow_dispatch:
@@ -43,37 +43,16 @@ jobs:
       commit: ${{ steps.bewaar.outputs.commit }}
       date: ${{ steps.editie.outputs.date }}
     steps:
-      - name: Controleer het Nederlandse tijdvenster
-        id: tijdvenster
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-        run: |
-          node --input-type=module <<'NODE'
-          import { appendFile } from "node:fs/promises";
-          const parts = new Intl.DateTimeFormat("sv-SE", {
-            timeZone: "Europe/Amsterdam",
-            weekday: "short",
-            hour: "2-digit",
-            hourCycle: "h23"
-          }).formatToParts(new Date());
-          const value = (type) => parts.find((part) => part.type === type).value;
-          const proceed = process.env.EVENT_NAME !== "schedule" || (value("weekday") === "mån" && value("hour") === "01");
-          await appendFile(process.env.GITHUB_OUTPUT, `proceed=${proceed}\n`);
-          await appendFile(process.env.GITHUB_STEP_SUMMARY, proceed ? "Uitvoering binnen het Nederlandse tijdvenster.\n" : "Reserve-UTC-tijdstip buiten maandag 01:00 Nederlandse tijd; veilig overgeslagen.\n");
-          NODE
       - name: Haal de site op
-        if: steps.tijdvenster.outputs.proceed == 'true'
         uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
       - name: Gebruik Node.js
-        if: steps.tijdvenster.outputs.proceed == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Controleer of de editie al bestaat
-        if: steps.tijdvenster.outputs.proceed == 'true'
         id: editie
         env:
           REQUESTED_DATE: ${{ inputs.edition_date }}
@@ -96,14 +75,13 @@ jobs:
           await appendFile(process.env.GITHUB_STEP_SUMMARY, generate ? `Nieuwe editie voor ${date} wordt gemaakt en gepubliceerd.\n` : `Editie bestaat al (${file}); geen nieuwe API-aanroep. De bestaande site wordt gepubliceerd.\n`);
           NODE
       - name: Genereer editie met bronvermeldingen
-        if: steps.tijdvenster.outputs.proceed == 'true' && steps.editie.outputs.generate == 'true'
+        if: steps.editie.outputs.generate == 'true'
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           EDITION_DATE: ${{ steps.editie.outputs.date }}
         run: node scripts/generate-weekly-edition.mjs
       - name: Bewaar de editie op main
         id: bewaar
-        if: steps.tijdvenster.outputs.proceed == 'true'
         env:
           EDITION_DATE: ${{ steps.editie.outputs.date }}
         run: |
