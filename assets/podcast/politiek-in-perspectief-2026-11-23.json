@@ -1,0 +1,135 @@
+{
+  "title": "Politiek in Perspectief — 23 november 2026",
+  "status": "klaar",
+  "publication_date": "2026-11-23",
+  "period": "16 november 2026–22 november 2026",
+  "ai_voice": true,
+  "disclosure": "Deze aflevering is ingesproken met een AI-stem, op basis van menselijke instructies.",
+  "voice": "marin",
+  "model": "gpt-4o-mini-tts",
+  "duration_seconds": 596.45,
+  "raw_duration_seconds": 596.45,
+  "tempo_adjustment": 1,
+  "narration_speed": 1,
+  "narration_instructions": "Spreek rustig, helder en warm Nederlands. Houd het tempo bedachtzaam en journalistiek, zonder opgewekte reclamesfeer.",
+  "word_count": 1143,
+  "source_edition": "edities/2026-11-22.html",
+  "source_blob_sha": "db387cd98f4ec9d18b047ed15baa4b33ea09e1f6",
+  "generated_at": "2026-11-23T03:49:42.865Z",
+  "chapters": [
+    {
+      "title": "Opening",
+      "start_seconds": 0
+    },
+    {
+      "title": "Kabinet zoekt financiële spelregels",
+      "start_seconds": 38.15
+    },
+    {
+      "title": "Herstelfonds dichter bij afronding",
+      "start_seconds": 100
+    },
+    {
+      "title": "Bijstand en passend werk",
+      "start_seconds": 160.95
+    },
+    {
+      "title": "Langere afspraken over natuurbeheer",
+      "start_seconds": 221.85
+    },
+    {
+      "title": "Grondstoffen en Europese industrie",
+      "start_seconds": 289
+    },
+    {
+      "title": "Bescherming over de grens",
+      "start_seconds": 354.6
+    },
+    {
+      "title": "Voorlopig uitstel methaanregels",
+      "start_seconds": 413.9
+    },
+    {
+      "title": "Klimaattop zonder overkoepelend akkoord",
+      "start_seconds": 474
+    },
+    {
+      "title": "Vooruitblik en afsluiting",
+      "start_seconds": 535.2
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.rijksoverheid.nl/documenten/2026/11/17/letterlijke-tekst-persconferentie-na-ministerraad-17-november-2026",
+      "title": "Rijksoverheid — persconferentie 17 november"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/documenten/2026/11/20/letterlijke-tekst-persconferentie-na-ministerraad-20-november-2026",
+      "title": "Rijksoverheid — persconferentie 20 november"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/20/positieve-beoordeling-vijfde-betaalverzoek-nederlands-herstel-en-veerkrachtplan",
+      "title": "Rijksoverheid — laatste betaalverzoek herstelfonds"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/20/kabinet-zet-werk-en-meedoen-centraal-in-de-participatiewet",
+      "title": "Rijksoverheid — koers Participatiewet"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/19/kabinet-trekt-extra-geld-uit-voor-agrarisch-natuurbeheer",
+      "title": "Rijksoverheid — uitbreiding agrarisch natuurbeheer"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/20/zr.ms.-evertsen-helpt-schepen-beschermen-in-de-rode-zee",
+      "title": "Rijksoverheid — inzet Evertsen"
+    },
+    {
+      "url": "https://research.europarl.europa.eu/home/topics/plenary-session/plenary-november-ii-2026.html",
+      "title": "EPRS — vooruitblik plenaire vergadering november"
+    },
+    {
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/20/forward-look-2026/",
+      "title": "Raad van de EU — agenda 23 november–6 december"
+    },
+    {
+      "url": "https://luxembourg.representation.ec.europa.eu/actualites-et-evenements/actualites/commission-proposes-boost-advanced-materials-europes-innovation-and-industrial-leadership-2026-11-18_en?prefLang=hu",
+      "title": "Europese Commissie — agenda geavanceerde materialen"
+    },
+    {
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/20/pilot-voorraadvorming-kritieke-grondstoffen-in-havens-rotterdam-en-porto-marghera",
+      "title": "Rijksoverheid — grondstoffenpilot Rotterdam en Porto Marghera"
+    },
+    {
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/19/council-greenlights-new-eu-rules-to-protect-vulnerable-adults/",
+      "title": "Raad van de EU — bescherming kwetsbare volwassenen"
+    },
+    {
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/19/equipping-europeans-for-the-age-of-ai-council-approves-conclusions/",
+      "title": "Raad van de EU — vaardigheden voor het AI-tijdperk"
+    },
+    {
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/19/council-calls-for-action-to-empower-young-people-in-an-evolving-information-environment/",
+      "title": "Raad van de EU — jongeren en informatieomgeving"
+    },
+    {
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/19/methane-regulation-eu-agrees-targeted-amendment-to-safeguard-security-of-supply/",
+      "title": "Raad van de EU — voorlopig methaanakkoord"
+    },
+    {
+      "url": "https://energy.ec.europa.eu/news/co-legislators-agree-targeted-amendment-methane-regulation-ensure-supply-security-amid-energy-crisis-2026-11-19_en?prefLang=el",
+      "title": "Europese Commissie — energiezekerheid en methaanregels"
+    },
+    {
+      "url": "https://unfccc.int/news/un-climate-change-executive-secretary-simon-stiell-remarks-at-the-closing-plenary-of-cop31",
+      "title": "UNFCCC — slotverklaring Simon Stiell"
+    },
+    {
+      "url": "https://www.gov.uk/government/news/cop31-outcomes-your-questions-answered",
+      "title": "Britse regering — uitleg uitkomsten COP31"
+    },
+    {
+      "url": "https://www.euronews.com/2026/11/22/cop31-climate-talks-fail-after-eu-and-others-reject-final-deal-proposal",
+      "title": "Euronews — Europees bezwaar tegen slotvoorstel"
+    }
+  ]
+}
