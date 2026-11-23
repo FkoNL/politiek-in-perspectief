@@ -1,0 +1,43 @@
+{
+  "edition": "2026-11-22",
+  "source_sha256": "1bbf89bb78b01255fa0ae626c27e7d1b941c1af19d8a57ea2952aee79c9f4221",
+  "images": [
+    "01.jpg",
+    "02.jpg",
+    "03.jpg",
+    "04.jpg",
+    "05.jpg",
+    "06.jpg"
+  ],
+  "caption": "Deze week ging het om de stap van afspraken naar uitvoering. De Europese Commissie beoordeelde het laatste Nederlandse herstelfondsverzoek positief, maar de betaling moet nog volgen. Extra geld voor agrarisch natuurbeheer is aangekondigd; de beoogde groei vraagt om samenhangend beheer en meting van natuurresultaten. In Europa is er een voorlopig akkoord over uitstel van bepaalde methaanverplichtingen, terwijl COP31 eindigde zonder overkoepelend akkoord.\n\nVolledig overzicht en bronnen via de link in bio.",
+  "content": {
+    "intro": "Herstelfonds en natuurbeheer, methaanregels en de uitkomst van COP31.",
+    "caption": "Deze week ging het om de stap van afspraken naar uitvoering. De Europese Commissie beoordeelde het laatste Nederlandse herstelfondsverzoek positief, maar de betaling moet nog volgen. Extra geld voor agrarisch natuurbeheer is aangekondigd; de beoogde groei vraagt om samenhangend beheer en meting van natuurresultaten. In Europa is er een voorlopig akkoord over uitstel van bepaalde methaanverplichtingen, terwijl COP31 eindigde zonder overkoepelend akkoord.\n\nVolledig overzicht en bronnen via de link in bio.",
+    "cards": [
+      {
+        "headline": "Positieve beoordeling voor laatste Nederlandse herstelfondsverzoek",
+        "body": "De Europese Commissie beoordeelde het laatste betaalverzoek van Nederland positief: € 1,7 miljard. Het verzoek is gekoppeld aan onder meer subsidies voor elektrische auto’s en woningverduurzaming, natuurmaatregelen en digitalisering. De beoordeling zegt niet automatisch hoeveel maatschappelijke opbrengst die maatregelen opleveren.",
+        "status": "Positieve beoordeling; betaling volgt",
+        "footer": "Andere lidstaten kunnen nog vragen stellen. Daarna volgt de uitbetaling; een precieze datum is niet genoemd."
+      },
+      {
+        "headline": "Extra geld voor agrarisch natuurbeheer, met langere contracten als doel",
+        "body": "Het kabinet kondigde € 1,2 miljard extra aan voor agrarisch natuurbeheer in 2027–2035. Het beheerde areaal moet stapsgewijs groeien van ongeveer 135.000 naar circa 280.000 hectare. Deelname blijft vrijwillig; langjarige contracten van twaalf of achttien jaar zijn beoogd vanaf 2029.",
+        "status": "Aangekondigde financiering",
+        "footer": "De aanpak wordt met partners uitgewerkt. Evaluatie van de uitbreiding is voorzien in 2033; groei in hectares garandeert op zichzelf geen ec,"
+      },
+      {
+        "headline": "Voorlopig EU-akkoord schuift bepaalde methaanverplichtingen op",
+        "body": "Raad en Europees Parlement spraken voorlopig af dat bepaalde monitoring-, rapportage- en verificatieverplichtingen voor importeurs vanaf 2029 gelden in plaats van 2027. Ook verschuift rapportage over methaanintensiteit. Het gaat om specifieke termijnen, niet om het intrekken van de hele verordening.",
+        "status": "Voorlopig akkoord",
+        "footer": "Parlement en Raad moeten het compromis nog formeel aannemen. Tot een formele wijziging blijft het bestaande wettelijke kader het uitgangs"
+      },
+      {
+        "headline": "COP31 eindigt zonder overkoepelend akkoord",
+        "body": "De EU en verschillende andere landen verwierpen het slotvoorstel voor het Antalya Pact, omdat daarin een verwijzing naar fossiele brandstoffen ontbrak. Er waren wel afzonderlijke besluiten en initiatieven, onder meer rond een rechtvaardige transitie. Die vervangen het ontbrekende overkoepelende akkoord niet.",
+        "status": "Geen overkoepelend akkoord",
+        "footer": "COP31 is formeel afgesloten. De onderhandelingen gaan verder richting COP32 in Ethiopië; voor hervatting van het pact is geen nieuwe datum"
+      }
+    ]
+  }
+}
